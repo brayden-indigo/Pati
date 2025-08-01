@@ -96,54 +96,59 @@ client.on("messageCreate", async (message) => {
         // when the wordle results are sent at the end of the day
         if (message.content.includes("streak")) {
           console.log(`Wordle #${currentNumber + 1}`);
-          // make a thread
-          const thread = await channel.threads.create({
-            name: `Wordle #${currentNumber + 1}`,
-            autoArchiveDuration: 1440,
-            type: ChannelType.PrivateThread,
-            invitable: false,
-            reason: "wordle",
-          });
-          console.log(`Created thread: ${thread.name}`);
-          // add today's wordle
-          wordle.push({
-            number: currentNumber + 1,
-            threadId: `${thread.id}`,
-          });
-          let jsonWordle = JSON.stringify(wordle);
-          fs.writeFileSync("wordle.json", jsonWordle);
-          console.log(`Added wordle #${currentNumber + 1} to wordle.json`);
           // when someone shares their wordle, add them to the thread
-        } else if (
-          shareContent != undefined &&
-          shareContent.includes(currentNumber)
-        ) {
-          console.log(`Shared ${shareContent}`);
-          let wordleResult = shareContent.charAt(12);
-          if (wordleResult == "X") wordleResult = 7;
-          // react to the message depending on how they did
-          message.react(emojis[wordleResult - 1]);
-          const thread = message.channel.threads.cache.get(lastWordle.threadId);
-          thread.members.add(message.interactionMetadata.user.id);
-          console.log(
-            `Added ${message.interactionMetadata.user.username} to thread`
-          );
-        } else if (
-          shareContent != undefined &&
-          shareContent.includes(currentNumber + 1)
-        ) {
-          message.reply("Please wait until yesterday's results are announced!");
         } else
-          outer: if (message.content.includes("is playing")) {
-            if (message.channel.id != id.mainChat) {
-              message.reply("wrong channel dumbass");
-              break outer;
+          outer1: if (shareContent != undefined) {
+            console.log(`Shared ${shareContent}`);
+            let wordleResult = shareContent.charAt(12);
+            if (wordleResult == "X") wordleResult = 7;
+            // react to the message depending on how they did
+            message.react(emojis[wordleResult - 1]);
+            for (let i = wordle.length; i == 0; i--) {
+              if (wordle[i - 1].number != shareContent.slice(3)) continue;
+              const thread = message.channel.threads.cache.get(
+                wordle[i - 1].threadId
+              );
+              thread.members.add(message.interactionMetadata.user.id);
+              console.log(
+                `Added ${message.interactionMetadata.user.username} to thread`
+              );
+              break outer1;
             }
-            console.log(message.content);
-            message.reply(
-              "Use </share:1354514123479711745> when you're done to get added to the discussion thread!"
+            // make a thread
+            const thread = await channel.threads.create({
+              name: `Wordle #${shareContent.slice(3)}`,
+              autoArchiveDuration: 1440,
+              type: ChannelType.PrivateThread,
+              invitable: false,
+              reason: "wordle",
+            });
+            console.log(`Created thread: ${thread.name}`);
+            thread.members.add(message.interactionMetadata.user.id);
+            console.log(
+              `Added ${message.interactionMetadata.user.username} to thread`
             );
-          }
+            // add today's wordle
+            wordle.push({
+              number: Number(shareContent.slice(3)),
+              threadId: `${thread.id}`,
+            });
+            let jsonWordle = JSON.stringify(wordle);
+            fs.writeFileSync("wordle.json", jsonWordle);
+            console.log(
+              `Added wordle #${shareContent.slice(3)} to wordle.json`
+            );
+          } else
+            outer2: if (message.content.includes("is playing")) {
+              if (message.channel.id != id.mainChat) {
+                message.reply("wrong channel dumbass");
+                break outer2;
+              }
+              console.log(message.content);
+              message.reply(
+                "Use </share:1354514123479711745> when you're done to get added to the discussion thread!"
+              );
+            }
       }
       break;
   }
