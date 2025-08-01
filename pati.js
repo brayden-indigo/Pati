@@ -47,7 +47,15 @@ function setRuleStatus(i) {
 }
 client.on("ready", () => {
   console.log("Connected as " + client.user.tag);
-  setRuleStatus(0);
+  // setRuleStatus(0);
+  client.user.setPresence({
+    activities: [
+      {
+        name: `The Subway`,
+        type: ActivityType.Listening,
+      },
+    ],
+  });
 });
 
 let id = {
@@ -104,7 +112,7 @@ client.on("messageCreate", async (message) => {
           });
           let jsonWordle = JSON.stringify(wordle);
           fs.writeFileSync("wordle.json", jsonWordle);
-          console.log(`Added wordle #${currentNumber} to wordle.json`);
+          console.log(`Added wordle #${currentNumber + 1} to wordle.json`);
           // when someone shares their wordle, add them to the thread
         } else if (
           shareContent != undefined &&
@@ -120,6 +128,11 @@ client.on("messageCreate", async (message) => {
           console.log(
             `Added ${message.interactionMetadata.user.username} to thread`
           );
+        } else if (
+          shareContent != undefined &&
+          shareContent.includes(currentNumber + 1)
+        ) {
+          message.reply("Please wait until yesterday's results are announced!");
         } else
           outer: if (message.content.includes("is playing")) {
             if (message.channelId != id.mainChat) {
