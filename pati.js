@@ -135,7 +135,7 @@ client.on("messageCreate", async (message) => {
           message.reply("Please wait until yesterday's results are announced!");
         } else
           outer: if (message.content.includes("is playing")) {
-            if (message.channelId != id.mainChat) {
+            if (message.channel.id != id.mainChat) {
               message.reply("wrong channel dumbass");
               break outer;
             }
