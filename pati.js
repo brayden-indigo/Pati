@@ -47,15 +47,7 @@ function setRuleStatus(i) {
 }
 client.on("ready", () => {
   console.log("Connected as " + client.user.tag);
-  // setRuleStatus(0);
-  client.user.setPresence({
-    activities: [
-      {
-        name: `The Subway`,
-        type: ActivityType.Listening,
-      },
-    ],
-  });
+  setRuleStatus(0);
 });
 
 let id = {
