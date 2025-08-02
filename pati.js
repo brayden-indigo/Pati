@@ -58,12 +58,11 @@ let id = {
     mainChat: "1379708536291983460",
   },
   triggers = [
-    /^ping/gi,
-    /i+ *l+(o+v+e+|u+v+) *(y+o+)*u+/gi,
-    /\bi *l *y+/gi,
-    /\bpa+ti+/gi,
+    [/^ping/gi, "pong"],
+    [/i+ *l+(o+v+e+|u+v+) *(y+o+)*u+/gi, "i love you too"],
+    [/\bi *l *y+/gi, "ily2"],
+    [/\bpa+ti+(?![a-z])/gi, "mrow"],
   ],
-  replies = ["pong", "i love you too", "ily2", "mrow"],
   emojis = [
     "1381729943268098068",
     "1379998170435551403",
@@ -76,6 +75,12 @@ let id = {
 
 // when a message is created
 client.on("messageCreate", async (message) => {
+  // automated response w
+  if (!message.author.bot) {
+    for (let i = 0; i < triggers.length; i++) {
+      if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
+    }
+  }
   const channel = message.channel;
   // makes sure some things only happen in some servers
   switch (message.guildId) {
@@ -146,12 +151,6 @@ client.on("messageCreate", async (message) => {
           }
       }
       break;
-  }
-  // automated response w
-  if (!message.author.bot) {
-    for (let i = 0; i < triggers.length; i++) {
-      if (triggers[i].test(message.content)) message.reply(replies[i]);
-    }
   }
 });
 
