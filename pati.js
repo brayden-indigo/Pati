@@ -81,55 +81,62 @@ client.on("messageCreate", async (message) => {
     case id.testServer:
       break;
     case id.mainServer:
-      let lastWordle = wordle[wordle.length - 1];
-      let currentNumber = lastWordle.number;
       if (message.author.id == id.wordle) {
+        // this is where the string containing the wordle # and result is ¯\_(ツ)_/¯
         const shareContent = message.components[0]?.components[0].data.content;
-        // when the wordle results are sent at the end of the day
-        if (message.content.includes("streak")) {
-          console.log(`Wordle #${currentNumber + 1}`);
-          // make a thread
+        // if the share command was sent
+        share: if (shareContent != undefined) {
+          // ex. Wordle #1505
+          const wordleIndex = Number(shareContent.substring(7, 11));
+          console.log(
+            `${message.interactionMetadata.user.username} shared ${shareContent}`
+          );
+          // looks for the i in "i/6"
+          const wordleResult = shareContent.charAt(12);
+          if (wordleResult == "X") wordleResult = 7;
+          // react to the message depending on how they did
+          message.react(emojis[wordleResult - 1]);
+          // cycles through every stored wordle
+          for (let i = 0; i < wordle.length; i++) {
+            // (1) if the shared wordle is stored, it adds them to the thread
+            if (wordle[i].number != wordleIndex) continue;
+            const thread = await message.channel.threads.fetch(
+              wordle[i].threadId
+            );
+            await thread.members.add(message.interactionMetadata.user.id);
+            message.forward(thread);
+            console.log(
+              `Added ${message.interactionMetadata.user.username} to the thread`
+            );
+            break share;
+          }
+          // (2) otherwise, a new thread is made
           const thread = await channel.threads.create({
-            name: `Wordle #${currentNumber + 1}`,
+            name: `Wordle #${wordleIndex}`,
             autoArchiveDuration: 1440,
             type: ChannelType.PrivateThread,
             invitable: false,
             reason: "wordle",
           });
           console.log(`Created thread: ${thread.name}`);
-          // add today's wordle
+          thread.members.add(message.interactionMetadata.user.id);
+          message.forward(thread);
+          console.log(
+            `Added ${message.interactionMetadata.user.username} to thread`
+          );
+          // store the shared wordle
           wordle.push({
-            number: currentNumber + 1,
+            number: wordleIndex,
             threadId: `${thread.id}`,
           });
           let jsonWordle = JSON.stringify(wordle);
           fs.writeFileSync("wordle.json", jsonWordle);
-          console.log(`Added wordle #${currentNumber + 1} to wordle.json`);
-          // when someone shares their wordle, add them to the thread
-        } else if (
-          shareContent != undefined &&
-          shareContent.includes(currentNumber)
-        ) {
-          console.log(`Shared ${shareContent}`);
-          let wordleResult = shareContent.charAt(12);
-          if (wordleResult == "X") wordleResult = 7;
-          // react to the message depending on how they did
-          message.react(emojis[wordleResult - 1]);
-          const thread = message.channel.threads.cache.get(lastWordle.threadId);
-          thread.members.add(message.interactionMetadata.user.id);
-          console.log(
-            `Added ${message.interactionMetadata.user.username} to thread`
-          );
-        } else if (
-          shareContent != undefined &&
-          shareContent.includes(currentNumber + 1)
-        ) {
-          message.reply("Please wait until yesterday's results are announced!");
+          console.log(`Added wordle #${wordleIndex} to wordle.json`);
         } else
-          outer: if (message.content.includes("is playing")) {
+          playing: if (message.content.includes("is playing")) {
             if (message.channel.id != id.mainChat) {
               message.reply("wrong channel dumbass");
-              break outer;
+              break playing;
             }
             console.log(message.content);
             message.reply(
@@ -146,7 +153,7 @@ client.on("messageCreate", async (message) => {
       !message.author.bot &&
       message.content.toLowerCase().includes(trigger)
     ) {
-      // reply with the response
+      // I'm planning on fixing this soon
       // message.reply(replies[trigger]);
     }
   }
