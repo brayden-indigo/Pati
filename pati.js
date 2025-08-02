@@ -10,8 +10,11 @@ const {
 require("dotenv").config();
 const fs = require("fs");
 // loads the wordle data
-let data = fs.readFileSync("wordle.json");
-let wordle = JSON.parse(data);
+let wordleData = fs.readFileSync("wordle.json");
+let wordle = JSON.parse(wordleData);
+// loads the pati count data
+let patiCountData = fs.readFileSync("patiCount.json");
+let patiCount = JSON.parse(patiCountData);
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -77,9 +80,46 @@ let id = {
 client.on("messageCreate", async (message) => {
   // automated response w
   if (!message.author.bot) {
-    for (let i = 0; i < triggers.length; i++) {
-      if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
+    let isPati = false;
+    patiCount: if (triggers[3][0].test(message.content)) {
+      console.log("PATI DETECTED!!!!");
+      for (let i = 0; i < patiCount.length; i++) {
+        if (i == 0) continue;
+        if (patiCount[i].userId == message.author.id) {
+          patiCount[i].score++;
+          let jsonPatiCount = JSON.stringify(patiCount);
+          fs.writeFileSync("patiCount.json", jsonPatiCount);
+          patiCount[i].score == 1
+            ? message.reply(
+                `mrow\n-# you have said my name ${patiCount[i].score} time`
+              )
+            : message.reply(
+                `mrow\n-# you have said my name ${patiCount[i].score} times`
+              );
+          break patiCount;
+        }
+      }
+      patiCount.push({
+        userId: `${message.author.id}`,
+        score: 1,
+      });
+      let jsonPatiCount = JSON.stringify(patiCount);
+      fs.writeFileSync("patiCount.json", jsonPatiCount);
+      patiCount[patiCount.length - 1].score == 1
+        ? message.reply(
+            `mrow\n-# you have said my name ${
+              patiCount[patiCount.length - 1].score
+            } time`
+          )
+        : message.reply(
+            `mrow\n-# you have said my name ${
+              patiCount[patiCount.length - 1].score
+            } times`
+          );
     }
+      for (let i = 0; i < 3; i++) {
+        if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
+      }
   }
   const channel = message.channel;
   // makes sure some things only happen in some servers
