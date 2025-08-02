@@ -148,8 +148,10 @@ client.on("messageCreate", async (message) => {
       break;
   }
   // automated response w
-  for (let i = 0; i < triggers.length; i++) {
-    if (triggers[i].test(message.content)) message.reply(replies[i]);
+  if (!message.author.bot) {
+    for (let i = 0; i < triggers.length; i++) {
+      if (triggers[i].test(message.content)) message.reply(replies[i]);
+    }
   }
 });
 
