@@ -57,12 +57,13 @@ let id = {
     wordle: "1211781489931452447",
     mainChat: "1379708536291983460",
   },
-  replies = {
-    ping: "pong",
-    pati: "mrow",
-    ily: "ily2",
-    "i love you": "i love you too",
-  },
+  triggers = [
+    /^ping/gi,
+    /i+ *l+(o+v+e+|u+v+) *(y+o+)*u+/gi,
+    /\bi *l *y+/gi,
+    /\bpa+ti+/gi,
+  ],
+  replies = ["pong", "i love you too", "ily2", "mrow"],
   emojis = [
     "1381729943268098068",
     "1379998170435551403",
@@ -146,16 +147,9 @@ client.on("messageCreate", async (message) => {
       }
       break;
   }
-  // run this code for every variable in replies
-  for (let trigger in replies) {
-    // if the message matches any of the triggers
-    if (
-      !message.author.bot &&
-      message.content.toLowerCase().includes(trigger)
-    ) {
-      // I'm planning on fixing this soon
-      // message.reply(replies[trigger]);
-    }
+  // automated response w
+  for (let i = 0; i < triggers.length; i++) {
+    if (triggers[i].test(message.content)) message.reply(replies[i]);
   }
 });
 
