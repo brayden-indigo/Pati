@@ -64,7 +64,7 @@ let id = {
     [/^ping/gi, "pong"],
     [/i+ *l+(o+v+e+|u+v+) *(y+o+)*u/gi, "i love you too"],
     [/\bi *l *y/gi, "ily2"],
-    [/\bpa+ti+\b/gi, "mrow"],
+    [/\bp\W*a+\W*t\W*i+\b/gi, "mrow"],
   ],
   emojis = [
     "1381729943268098068",
@@ -82,7 +82,6 @@ client.on("messageCreate", async (message) => {
   if (!message.author.bot) {
     let isPati = false;
     patiCount: if (triggers[3][0].test(message.content)) {
-      console.log("PATI DETECTED!!!!");
       for (let i = 0; i < patiCount.length; i++) {
         if (i == 0) continue;
         if (patiCount[i].userId == message.author.id) {
@@ -117,9 +116,9 @@ client.on("messageCreate", async (message) => {
             } times`
           );
     }
-      for (let i = 0; i < 3; i++) {
-        if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
-      }
+    for (let i = 0; i < 3; i++) {
+      if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
+    }
   }
   const channel = message.channel;
   // makes sure some things only happen in some servers
