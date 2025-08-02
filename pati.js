@@ -59,9 +59,9 @@ let id = {
   },
   triggers = [
     [/^ping/gi, "pong"],
-    [/i+ *l+(o+v+e+|u+v+) *(y+o+)*u+/gi, "i love you too"],
-    [/\bi *l *y+/gi, "ily2"],
-    [/\bpa+ti+(?![a-z])/gi, "mrow"],
+    [/i+ *l+(o+v+e+|u+v+) *(y+o+)*u/gi, "i love you too"],
+    [/\bi *l *y/gi, "ily2"],
+    [/\bpa+ti+\b/gi, "mrow"],
   ],
   emojis = [
     "1381729943268098068",
