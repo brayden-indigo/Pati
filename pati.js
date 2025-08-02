@@ -96,12 +96,12 @@ client.on("messageCreate", async (message) => {
             if (wordleResult == "X") wordleResult = 7;
             // react to the message depending on how they did
             message.react(emojis[wordleResult - 1]);
-            for (let i = wordle.length; i == 0; i--) {
-              if (wordle[i - 1].number != shareContent.slice(3)) continue;
-              const thread = message.channel.threads.cache.get(
-                wordle[i - 1].threadId
+            for (let i = 0; i < wordle.length; i++) {
+              if (wordle[i].number != shareContent.substring(7, 11)) continue;
+              const thread = await message.channel.threads.fetch(
+                wordle[i].threadId
               );
-              thread.members.add(message.interactionMetadata.user.id);
+              await thread.members.add(message.interactionMetadata.user.id);
               console.log(
                 `Added ${message.interactionMetadata.user.username} to thread`
               );
@@ -109,7 +109,7 @@ client.on("messageCreate", async (message) => {
             }
             // make a thread
             const thread = await channel.threads.create({
-              name: `Wordle #${shareContent.slice(3)}`,
+              name: `Wordle #${shareContent.substring(7, 11)}`,
               autoArchiveDuration: 1440,
               type: ChannelType.PrivateThread,
               invitable: false,
@@ -122,13 +122,13 @@ client.on("messageCreate", async (message) => {
             );
             // add today's wordle
             wordle.push({
-              number: Number(shareContent.slice(3)),
+              number: Number(shareContent.substring(7, 11)),
               threadId: `${thread.id}`,
             });
             let jsonWordle = JSON.stringify(wordle);
             fs.writeFileSync("wordle.json", jsonWordle);
             console.log(
-              `Added wordle #${shareContent.slice(3)} to wordle.json`
+              `Added wordle #${shareContent.substring(7, 11)} to wordle.json`
             );
           } else
             outer2: if (message.content.includes("is playing")) {
