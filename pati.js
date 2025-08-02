@@ -102,6 +102,7 @@ client.on("messageCreate", async (message) => {
                 wordle[i].threadId
               );
               await thread.members.add(message.interactionMetadata.user.id);
+              message.forward(thread);
               console.log(
                 `Added ${message.interactionMetadata.user.username} to thread`
               );
@@ -117,6 +118,7 @@ client.on("messageCreate", async (message) => {
             });
             console.log(`Created thread: ${thread.name}`);
             thread.members.add(message.interactionMetadata.user.id);
+            message.forward(thread);
             console.log(
               `Added ${message.interactionMetadata.user.username} to thread`
             );
