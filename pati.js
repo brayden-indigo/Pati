@@ -92,7 +92,7 @@ client.on("messageCreate", async (message) => {
             `${message.interactionMetadata.user.username} shared ${shareContent}`
           );
           // looks for the i in "i/6"
-          const wordleResult = shareContent.charAt(12);
+          let wordleResult = shareContent.charAt(12);
           if (wordleResult == "X") wordleResult = 7;
           // react to the message depending on how they did
           message.react(emojis[wordleResult - 1]);
