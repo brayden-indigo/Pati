@@ -203,7 +203,7 @@ client.on("messageCreate", async (message) => {
         for (let i = 0; i < aura.length; i++) {
           if (aura[i].user == id) x = i;
         }
-        if (aura[x].aura == undefined) {
+        if (typeof aura[x].aura == undefined) {
           message.reply({
             content: `<@${id}> has not obtained any aura`,
             allowedMentions: { users: [message.author.id] },
