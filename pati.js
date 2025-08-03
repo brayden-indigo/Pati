@@ -9,12 +9,14 @@ const {
 } = require("discord.js");
 require("dotenv").config();
 const fs = require("fs");
-function fileImport(variable, file) {
-  let data = fs.readFileSync(file);
-  let (variable) = JSON.parse(data);
-}
-fileImport(wordle, "wordle.json")
-fileImport(patiCount, "patiCount.json")
+let data1 = fs.readFileSync('aura.json')
+let aura = JSON.parse(data1)
+aura[0].aura = Infinity;
+aura[1].aura = Infinity;
+let data2 = fs.readFileSync("wordle.json");
+let wordle = JSON.parse(data2);
+let data3 = fs.readFileSync("patiCount.json");
+let patiCount = JSON.parse(data3);
 function fileExport(variable, file) {
   let data = JSON.stringify(variable);
   fs.writeFileSync(file, data);
