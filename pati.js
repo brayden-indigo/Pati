@@ -119,7 +119,7 @@ client.on("messageCreate", async (message) => {
         userId: `${message.author.id}`,
         score: 1,
       });
-      fileExport(patiCount, "PatiCount.json");
+      fileExport(patiCount, "patiCount.json");
       let response = `mrow\n-# you have said my name ${
         patiCount[patiCount.length - 1].score
       } time`;
