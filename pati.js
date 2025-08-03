@@ -102,9 +102,9 @@ client.on("messageCreate", async (message) => {
           let response = `mrow\n-# you have said my name ${patiCount[i].score} time`;
           patiCount[i].score == 1
             ? // I'm planning on making these reply lines less look horrendous
-              message.reply(`${response}\n${patiCount[0].total} total ${pati}s`)
+              message.reply(`${response}\n-# ${patiCount[0].total} total ${pati}s`)
             : message.reply(
-                `${response}s\n${patiCount[0].total} total ${pati}s`
+                `${response}s\n-# ${patiCount[0].total} total ${pati}s`
               );
           break patiCount;
         }
@@ -122,8 +122,8 @@ client.on("messageCreate", async (message) => {
       calcTotal();
       patiCount[patiCount.length - 1].score == 1
         ? // I'm planning on making these reply lines less look horrendous
-          message.reply(`${response}\n${patiCount[0].total} total ${pati}s`)
-        : message.reply(`${response}s\n${patiCount[0].total} total ${pati}s`);
+          message.reply(`${response}\n-# ${patiCount[0].total} total ${pati}s`)
+        : message.reply(`${response}s\n-# ${patiCount[0].total} total ${pati}s`);
     }
     // checks the rest of the autoresponses
     for (let i = 0; i < 3; i++) {
