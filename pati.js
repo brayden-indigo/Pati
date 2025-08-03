@@ -186,7 +186,7 @@ client.on("messageCreate", async (message) => {
           content: `+1 aura\n<@${id}> now has ${aura[x].aura} aura`,
           allowedMentions: { users: [message.author.id] },
         });
-      } else message.reply("invalid command format");
+      }
     } else if (message.content.startsWith("-aura")) {
       let regex = /\d{18}\d?/;
       let id = message.content.match(regex);
