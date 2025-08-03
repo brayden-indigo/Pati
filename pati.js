@@ -75,7 +75,7 @@ let id = {
     "1400326349754728518",
     "1400326563144274050",
   ];
-pati = "<:pati:1379700481089339392>";
+let pati = "<:pati:1379700481089339392>";
 
 // when a message is created
 client.on("messageCreate", async (message) => {
