@@ -67,39 +67,29 @@ function exportAura() {
 }
 // add aura
 function posAura(id) {
-  let hasAura = true;
-  for (let i = 0; i < aura.length; i++) {
-    if (id == aura[i].user) {
-      aura[i].aura++;
-      hasAura = true;
-      break;
-    } else hasAura = false;
-  }
-  if (!hasAura) {
+  let hasAura = aura.find((a) => a.user == id);
+  if (hasAura) {
+    let i = aura.findIndex((a) => a.user == id);
+    aura[i].aura++;
+  } else {
     aura.push({
       user: id,
       aura: 1,
     });
-    console.log(aura[aura.length - 1])
   }
   exportAura();
 }
 // subtract aura
 function negAura(id) {
-  let hasAura = true;
-  for (let i = 0; i < aura.length; i++) {
-    if (id == aura[i].user) {
-      aura[i].aura--;
-      hasAura = true;
-      break;
-    } else hasAura = false;
-  }
-  if (!hasAura) {
+  let hasAura = aura.find((a) => a.user == id);
+  if (hasAura) {
+    let i = aura.findIndex((a) => a.user == id);
+    aura[i].aura--;
+  } else {
     aura.push({
       user: id,
       aura: -1,
     });
-    console.log(aura[aura.length - 1])
   }
   exportAura();
 }
@@ -141,39 +131,36 @@ client.on("messageCreate", async (message) => {
         }
       }
       // checks if their score has been stored
-      for (let i = 0; i < patiCount.length; i++) {
-        if (i == 0) continue;
-        if (patiCount[i].userId == message.author.id) {
-          // (1) if it has, their score increases
-          patiCount[i].score++;
-          fileExport(patiCount, "patiCount.json");
-          calcTotal();
-          let response = `mrow\n-# you have said my name ${patiCount[i].score} time`;
-          patiCount[i].score == 1
-            ? // I'm planning on making these reply lines less look horrendous
-              message.reply(
-                `${response}\n-# ${patiCount[0].total} total ${pati}`
-              )
-            : message.reply(
-                `${response}s\n-# ${patiCount[0].total} total ${pati}`
-              );
-          break;
-        }
+      let hasPati = patiCount.find((a) => a.userId == message.author.id);
+      if (hasPati) {
+        let i = patiCount.findIndex((a) => a.userId == message.author.id);
+        patiCount[i].score++;
+        fileExport(patiCount, "patiCount.json");
+        calcTotal();
+        let response = `mrow\n-# you have said my name ${patiCount[i].score} time`;
+        patiCount[i].score == 1
+          ? // I'm planning on making these reply lines less look horrendous
+            message.reply(`${response}\n-# ${patiCount[0].total} total ${pati}`)
+          : message.reply(
+              `${response}s\n-# ${patiCount[0].total} total ${pati}`
+            );
+      } else {
+        patiCount.push({
+          userId: `${message.author.id}`,
+          score: 1,
+        });
+        fileExport(patiCount, "patiCount.json");
+        let response = `mrow\n-# you have said my name ${
+          patiCount[patiCount.length - 1].score
+        } time`;
+        calcTotal();
+        patiCount[patiCount.length - 1].score == 1
+          ? // I'm planning on making these reply lines less look horrendous
+            message.reply(`${response}\n-# ${patiCount[0].total} total ${pati}`)
+          : message.reply(
+              `${response}s\n-# ${patiCount[0].total} total ${pati}`
+            );
       }
-      // (2) if it hasn't, they're added to the json file for future reference
-      patiCount.push({
-        userId: `${message.author.id}`,
-        score: 1,
-      });
-      fileExport(patiCount, "patiCount.json");
-      let response = `mrow\n-# you have said my name ${
-        patiCount[patiCount.length - 1].score
-      } time`;
-      calcTotal();
-      patiCount[patiCount.length - 1].score == 1
-        ? // I'm planning on making these reply lines less look horrendous
-          message.reply(`${response}\n-# ${patiCount[0].total} total ${pati}`)
-        : message.reply(`${response}s\n-# ${patiCount[0].total} total ${pati}`);
     }
     // checks the rest of the autoresponses
     for (let i = 0; i < triggers.length - 1; i++) {
@@ -183,14 +170,11 @@ client.on("messageCreate", async (message) => {
       message.react("1383119559313195190");
       let regex = /\d{18}\d?/;
       let id = message.content.match(regex);
-      if (id != undefined) {
+      if (id) {
         posAura(id);
-        let x;
-        for (let i = 0; i < aura.length; i++) {
-          if (aura[i].user == id) x = i;
-        }
+        let i = aura.findIndex((a) => a.user == id);
         message.reply({
-          content: `+1 aura\n<@${id}> has ${aura[x].aura} aura`,
+          content: `+1 aura\n<@${id}> has ${aura[i].aura} aura`,
           allowedMentions: { users: [message.author.id] },
         });
       }
@@ -198,51 +182,44 @@ client.on("messageCreate", async (message) => {
       message.react("1393512157630697472");
       let regex = /\d{18}\d?/;
       let id = message.content.match(regex);
-      if (id != undefined) {
+      if (id) {
         negAura(id);
-        let x;
-        for (let i = 0; i < aura.length; i++) {
-          if (aura[i].user == id) x = i;
-        }
+        let i = aura.findIndex((a) => a.user == id);
         message.reply({
-          content: `-1 aura\n<@${id}> has ${aura[x].aura} aura`,
+          content: `-1 aura\n<@${id}> has ${aura[i].aura} aura`,
           allowedMentions: { users: [message.author.id] },
         });
       }
     } else if (message.content.startsWith("aura")) {
       let regex = /\d{18}\d?/;
       let id = message.content.match(regex);
-      if (id != undefined) {
-        let x = undefined;
-        for (let i = 0; i < aura.length; i++) {
-          if (aura[i].user == id) x = i;
-        }
-        if (x === undefined) {
+      if (id) {
+        let i = aura.findIndex((a) => a.user == id);
+        if (!i) {
           aura.push({
             user: id,
             aura: 0,
           });
-          x = aura.length - 1;
+          i = aura.length - 1;
           exportAura();
         }
         message.react(
-          aura[x].aura == Infinity
+          aura[i].aura == Infinity
             ? "1379998042488569856"
-            : aura[x].aura < 0
+            : aura[i].aura < 0
             ? "1400326349754728518"
-            : aura[x].aura > 0
+            : aura[i].aura > 0
             ? "1400326245387866224"
             : "1379998170435551403"
         );
         message.reply({
-          content: `<@${id}> has ${aura[x].aura} aura`,
+          content: `<@${id}> has ${aura[i].aura} aura`,
           allowedMentions: { users: [message.author.id] },
         });
       }
     }
-    const channel = message.channel;
-    // makes sure some things only happen in some servers
   }
+  // makes sure some things only happen in some servers
   switch (message.guildId) {
     case id.testServer:
       break;
@@ -251,9 +228,7 @@ client.on("messageCreate", async (message) => {
         // this is where the string containing the wordle # and result is ¯\_(ツ)_/¯
         const shareContent = message.components[0]?.components[0].data.content;
         // if the share command was sent
-        if (shareContent != undefined) {
-          // ex. Wordle #1505
-          const wordleIndex = Number(shareContent.substring(7, 11));
+        if (shareContent) {
           console.log(
             `${message.interactionMetadata.user.username} shared ${shareContent}`
           );
@@ -263,9 +238,10 @@ client.on("messageCreate", async (message) => {
           // react to the message depending on how they did
           message.react(emojis[wordleResult - 1]);
           // cycles through every stored wordle
-          for (let i = 0; i < wordle.length; i++) {
-            // (1) if the shared wordle is stored, it adds them to the thread
-            if (wordle[i].number != wordleIndex) continue;
+          const wordleIndex = Number(shareContent.substring(7, 11)); // ex. Wordle #1505
+          let i = wordle.findIndex(w => w.number == wordleIndex)
+          // (1) if the wordle is stored, adds them to it
+          if (i) {
             const thread = await message.channel.threads.fetch(
               wordle[i].threadId
             );
@@ -274,40 +250,40 @@ client.on("messageCreate", async (message) => {
             console.log(
               `Added ${message.interactionMetadata.user.username} to the thread`
             );
+            // (2) if it's not, makes a new thread
+          } else {
+            const thread = await message.channel.threads.create({
+              name: `Wordle #${wordleIndex}`,
+              autoArchiveDuration: 1440,
+              type: ChannelType.PrivateThread,
+              invitable: false,
+              reason: "wordle",
+            });
+            console.log(`Created thread: ${thread.name}`);
+            // adds them to it
+            thread.members.add(message.interactionMetadata.user.id);
+            message.forward(thread);
+            console.log(
+              `Added ${message.interactionMetadata.user.username} to thread`
+            );
+            // store the shared wordle
+            wordle.push({
+              number: wordleIndex,
+              threadId: `${thread.id}`,
+            });
+            fileExport(wordle, "wordle.json");
+            console.log(`Added wordle #${wordleIndex} to wordle.json`);
+          }
+        } else if (message.content.includes("is playing")) {
+          if (message.channel.id != id.mainChat) {
+            message.reply("wrong channel dumbass");
             break;
           }
-          // (2) otherwise, a new thread is made
-          const thread = await channel.threads.create({
-            name: `Wordle #${wordleIndex}`,
-            autoArchiveDuration: 1440,
-            type: ChannelType.PrivateThread,
-            invitable: false,
-            reason: "wordle",
-          });
-          console.log(`Created thread: ${thread.name}`);
-          thread.members.add(message.interactionMetadata.user.id);
-          message.forward(thread);
-          console.log(
-            `Added ${message.interactionMetadata.user.username} to thread`
+          console.log(message.content);
+          message.reply(
+            "Use </share:1354514123479711745> when you're done to get added to the discussion thread!"
           );
-          // store the shared wordle
-          wordle.push({
-            number: wordleIndex,
-            threadId: `${thread.id}`,
-          });
-          fileExport(wordle, "wordle.json");
-          console.log(`Added wordle #${wordleIndex} to wordle.json`);
-        } else
-          if (message.content.includes("is playing")) {
-            if (message.channel.id != id.mainChat) {
-              message.reply("wrong channel dumbass");
-              break;
-            }
-            console.log(message.content);
-            message.reply(
-              "Use </share:1354514123479711745> when you're done to get added to the discussion thread!"
-            );
-          }
+        }
       }
       break;
   }
