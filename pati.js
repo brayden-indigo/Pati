@@ -75,6 +75,7 @@ let id = {
     "1400326349754728518",
     "1400326563144274050",
   ];
+pati = "<:pati:1379700481089339392>";
 
 // when a message is created
 client.on("messageCreate", async (message) => {
@@ -82,6 +83,13 @@ client.on("messageCreate", async (message) => {
   if (!message.author.bot) {
     // if someone says pati
     patiCount: if (triggers[3][0].test(message.content)) {
+      function calcTotal() {
+        patiCount[0].total = 0;
+        for (let i = 0; i < patiCount.length; i++) {
+          if (i == 0) continue;
+          patiCount[0].total += patiCount[i].score;
+        }
+      }
       // checks if their score has been stored
       for (let i = 0; i < patiCount.length; i++) {
         if (i == 0) continue;
@@ -90,11 +98,14 @@ client.on("messageCreate", async (message) => {
           patiCount[i].score++;
           let jsonPatiCount = JSON.stringify(patiCount);
           fs.writeFileSync("patiCount.json", jsonPatiCount);
+          calcTotal();
           let response = `mrow\n-# you have said my name ${patiCount[i].score} time`;
           patiCount[i].score == 1
             ? // I'm planning on making these reply lines less look horrendous
-              message.reply(response)
-            : message.reply(response + "s");
+              message.reply(`${response}\n${patiCount[0].total} total ${pati}s`)
+            : message.reply(
+                `${response}s\n${patiCount[0].total} total ${pati}s`
+              );
           break patiCount;
         }
       }
@@ -108,10 +119,11 @@ client.on("messageCreate", async (message) => {
       let response = `mrow\n-# you have said my name ${
         patiCount[patiCount.length - 1].score
       } time`;
+      calcTotal();
       patiCount[patiCount.length - 1].score == 1
         ? // I'm planning on making these reply lines less look horrendous
-          message.reply(response)
-        : message.reply(response + "s");
+          message.reply(`${response}\n${patiCount[0].total} total ${pati}s`)
+        : message.reply(`${response}s\n${patiCount[0].total} total ${pati}s`);
     }
     // checks the rest of the autoresponses
     for (let i = 0; i < 3; i++) {
