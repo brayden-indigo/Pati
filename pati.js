@@ -9,8 +9,8 @@ const {
 } = require("discord.js");
 require("dotenv").config();
 const fs = require("fs");
-let data1 = fs.readFileSync('aura.json')
-let aura = JSON.parse(data1)
+let data1 = fs.readFileSync("aura.json");
+let aura = JSON.parse(data1);
 aura[0].aura = Infinity;
 aura[1].aura = Infinity;
 let data2 = fs.readFileSync("wordle.json");
@@ -58,6 +58,39 @@ client.on("ready", () => {
   console.log("Connected as " + client.user.tag);
   setRuleStatus(0);
 });
+
+function posAura(id) {
+  let hasAura = true;
+  for (let i = 0; i < aura.length; i++) {
+    id == aura[i].user ? aura[i].aura++ : (hasAura = false);
+  }
+  if (!hasAura) {
+    aura.push({
+      user: `${id}`,
+      aura: 1
+    })
+  }
+  aura[0].aura = "Infinity";
+  aura[1].aura = "Infinity";
+  let data = JSON.stringify(aura);
+  fs.writeFileSync("aura.json", data);
+}
+function negAura(id) {
+  let hasAura = true;
+  for (let i = 0; i < aura.length; i++) {
+    id == aura[i].user ? aura[i].aura-- : (hasAura = false);
+  }
+  if (!hasAura) {
+    aura.push({
+      user: `${id}`,
+      aura: -1,
+    });
+  }
+  aura[0].aura = "Infinity";
+  aura[1].aura = "Infinity";
+  let data = JSON.stringify(aura);
+  fs.writeFileSync("aura.json", data);
+}
 
 let id = {
     testServer: "946959817170378803",
@@ -133,6 +166,17 @@ client.on("messageCreate", async (message) => {
     // checks the rest of the autoresponses
     for (let i = 0; i < triggers.length - 1; i++) {
       if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
+    }
+    if (message.content.startsWith("+aura")) {
+      let regex = /\d{18}/;
+      let id = message.content.match(regex)[0];
+      if (id != undefined) posAura(id);
+      else message.reply("invalid command format");
+    } else if (message.content.startsWith("-aura")) {
+      let regex = /\d{18}/;
+      let id = message.content.match(regex)[0];
+      if (id != undefined) negAura(id);
+      else message.reply("invalid command format");
     }
   }
   const channel = message.channel;
