@@ -86,7 +86,7 @@ client.on("messageCreate", async (message) => {
   // automated response w
   if (!message.author.bot) {
     // if someone says pati
-    patiCount: if (triggers[3][0].test(message.content)) {
+    patiCount: if (triggers[triggers.length - 1][0].test(message.content)) {
       function calcTotal() {
         patiCount[0].total = 0;
         for (let i = 0; i < patiCount.length; i++) {
@@ -132,7 +132,7 @@ client.on("messageCreate", async (message) => {
           );
     }
     // checks the rest of the autoresponses
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < triggers.length - 1; i++) {
       if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
     }
   }
