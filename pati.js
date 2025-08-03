@@ -199,12 +199,12 @@ client.on("messageCreate", async (message) => {
       let regex = /\d{18}\d?/;
       let id = message.content.match(regex)[0];
       if (id != undefined) {
-        let x;
+        let x = undefined;
         for (let i = 0; i < aura.length; i++) {
           if (aura[i].user == id) x = i;
         }
         if (typeof aura[x] == undefined) {
-          await aura.push({
+          aura.push({
             user: `${id}`,
             aura: 0,
           });
