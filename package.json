@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/brayden-indigo/Pati#readme",
   "dependencies": {
+    "@discordjs/builders": "^1.11.2",
+    "@discordjs/rest": "^2.5.1",
+    "discord-api-types": "^0.38.18",
     "discord.js": "^14.21.0",
     "dotenv": "^17.2.1",
     "fs": "^0.0.1-security"

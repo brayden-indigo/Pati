@@ -279,7 +279,6 @@ client.on("messageCreate", async (message) => {
             message.reply("wrong channel dumbass");
             break;
           }
-          console.log(message.content);
           message.reply(
             "Use </share:1354514123479711745> when you're done to get added to the discussion thread!"
           );
