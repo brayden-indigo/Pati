@@ -59,6 +59,12 @@ client.on("ready", () => {
   setRuleStatus(0);
 });
 
+function exportAura() {
+  aura[0].aura = "Infinity";
+  aura[1].aura = "Infinity";
+  let data = JSON.stringify(aura);
+  fs.writeFileSync("aura.json", data);
+}
 function posAura(id) {
   let hasAura = true;
   for (let i = 0; i < aura.length; i++) {
@@ -70,10 +76,7 @@ function posAura(id) {
       aura: 1,
     });
   }
-  aura[0].aura = "Infinity";
-  aura[1].aura = "Infinity";
-  let data = JSON.stringify(aura);
-  fs.writeFileSync("aura.json", data);
+  exportAura();
 }
 function negAura(id) {
   let hasAura = true;
@@ -86,10 +89,7 @@ function negAura(id) {
       aura: -1,
     });
   }
-  aura[0].aura = "Infinity";
-  aura[1].aura = "Infinity";
-  let data = JSON.stringify(aura);
-  fs.writeFileSync("aura.json", data);
+  exportAura();
 }
 
 let id = {
@@ -204,16 +204,16 @@ client.on("messageCreate", async (message) => {
           if (aura[i].user == id) x = i;
         }
         if (typeof aura[x] == undefined) {
-          message.reply({
-            content: `<@${id}> has not obtained any aura`,
-            allowedMentions: { users: [message.author.id] },
+          aura.push({
+            user: `${id}`,
+            aura: 0,
           });
-        } else {
-          message.reply({
-            content: `<@${id}> has ${aura[x].aura} aura`,
-            allowedMentions: { users: [message.author.id] },
-          });
+          exportAura();
         }
+        message.reply({
+          content: `<@${id}> has ${aura[x].aura} aura`,
+          allowedMentions: { users: [message.author.id] },
+        });
       } else message.reply("invalid command format");
     }
   }
