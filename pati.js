@@ -198,12 +198,13 @@ client.on("messageCreate", async (message) => {
     } else if (message.content.startsWith("aura")) {
       let regex = /\d{18}\d?/;
       let id = message.content.match(regex)[0];
-      let x = undefined;
       if (id != undefined) {
+        let x = undefined;
         for (let i = 0; i < aura.length; i++) {
           if (aura[i].user == id) x = i;
         }
         if (typeof x == undefined) {
+          console.log(`is this even working???`)
           aura.push({
             user: `${id}`,
             aura: 0,
