@@ -169,7 +169,7 @@ client.on("messageCreate", async (message) => {
     if (message.content.startsWith("+aura")) {
       message.react("1383119559313195190");
       let regex = /\d{18}\d?/;
-      let id = message.content.match(regex);
+      let id = message.content.match(regex)[0];
       if (id) {
         posAura(id);
         let i = aura.findIndex((a) => a.user == id);
@@ -192,7 +192,7 @@ client.on("messageCreate", async (message) => {
       }
     } else if (message.content.startsWith("aura")) {
       let regex = /\d{18}\d?/;
-      let id = message.content.match(regex);
+      let id = message.content.match(regex)[0];
       if (id) {
         let i = aura.findIndex((a) => a.user == id);
         if (!i) {
@@ -239,7 +239,7 @@ client.on("messageCreate", async (message) => {
           message.react(emojis[wordleResult - 1]);
           // cycles through every stored wordle
           const wordleIndex = Number(shareContent.substring(7, 11)); // ex. Wordle #1505
-          let i = wordle.findIndex(w => w.number == wordleIndex)
+          let i = wordle.findIndex((w) => w.number == wordleIndex);
           // (1) if the wordle is stored, adds them to it
           if (i) {
             const thread = await message.channel.threads.fetch(
