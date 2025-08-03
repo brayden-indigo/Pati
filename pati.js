@@ -68,10 +68,11 @@ function exportAura() {
 // add aura
 function posAura(id) {
   let hasAura = true;
-  for (let i = 0; i < aura.length; i++) {
+  aura: for (let i = 0; i < aura.length; i++) {
     if (id == aura[i].user) {
       aura[i].aura++;
       hasAura = true;
+      break aura;
     } else hasAura = false;
   }
   if (!hasAura) {
@@ -79,16 +80,18 @@ function posAura(id) {
       user: `${id}`,
       aura: 1,
     });
+    console.log(aura[aura.length - 1])
   }
   exportAura();
 }
 // subtract aura
 function negAura(id) {
   let hasAura = true;
-  for (let i = 0; i < aura.length; i++) {
+  aura: for (let i = 0; i < aura.length; i++) {
     if (id == aura[i].user) {
       aura[i].aura--;
       hasAura = true;
+      break aura;
     } else hasAura = false;
   }
   if (!hasAura) {
@@ -96,6 +99,7 @@ function negAura(id) {
       user: `${id}`,
       aura: -1,
     });
+    console.log(aura[aura.length - 1])
   }
   exportAura();
 }
@@ -186,7 +190,7 @@ client.on("messageCreate", async (message) => {
           if (aura[i].user == id) x = i;
         }
         message.reply({
-          content: `+1 aura\n<@${id}> now has ${aura[x].aura} aura`,
+          content: `+1 aura\n<@${id}> has ${aura[x].aura} aura`,
           allowedMentions: { users: [message.author.id] },
         });
       }
@@ -201,7 +205,7 @@ client.on("messageCreate", async (message) => {
           if (aura[i].user == id) x = i;
         }
         message.reply({
-          content: `-1 aura\n<@${id}> now has ${aura[x].aura} aura`,
+          content: `-1 aura\n<@${id}> has ${aura[x].aura} aura`,
           allowedMentions: { users: [message.author.id] },
         });
       } else if (message.content.startsWith("aura")) {
