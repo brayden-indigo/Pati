@@ -68,16 +68,16 @@ function exportAura() {
 // add aura
 function posAura(id) {
   let hasAura = true;
-  aura: for (let i = 0; i < aura.length; i++) {
+  for (let i = 0; i < aura.length; i++) {
     if (id == aura[i].user) {
       aura[i].aura++;
       hasAura = true;
-      break aura;
+      break;
     } else hasAura = false;
   }
   if (!hasAura) {
     aura.push({
-      user: `${id}`,
+      user: id,
       aura: 1,
     });
     console.log(aura[aura.length - 1])
@@ -87,16 +87,16 @@ function posAura(id) {
 // subtract aura
 function negAura(id) {
   let hasAura = true;
-  aura: for (let i = 0; i < aura.length; i++) {
+  for (let i = 0; i < aura.length; i++) {
     if (id == aura[i].user) {
       aura[i].aura--;
       hasAura = true;
-      break aura;
+      break;
     } else hasAura = false;
   }
   if (!hasAura) {
     aura.push({
-      user: `${id}`,
+      user: id,
       aura: -1,
     });
     console.log(aura[aura.length - 1])
@@ -132,7 +132,7 @@ client.on("messageCreate", async (message) => {
   // automated response w
   if (!message.author.bot) {
     // if someone says pati
-    patiCount: if (triggers[triggers.length - 1][0].test(message.content)) {
+    if (triggers[triggers.length - 1][0].test(message.content)) {
       function calcTotal() {
         patiCount[0].total = 0;
         for (let i = 0; i < patiCount.length; i++) {
@@ -157,7 +157,7 @@ client.on("messageCreate", async (message) => {
             : message.reply(
                 `${response}s\n-# ${patiCount[0].total} total ${pati}`
               );
-          break patiCount;
+          break;
         }
       }
       // (2) if it hasn't, they're added to the json file for future reference
@@ -219,14 +219,14 @@ client.on("messageCreate", async (message) => {
         }
         if (x === undefined) {
           aura.push({
-            user: `${id}`,
+            user: id,
             aura: 0,
           });
           x = aura.length - 1;
           exportAura();
         }
         message.react(
-          aura[x].aura === Infinity
+          aura[x].aura == Infinity
             ? "1379998042488569856"
             : aura[x].aura < 0
             ? "1400326349754728518"
@@ -251,7 +251,7 @@ client.on("messageCreate", async (message) => {
         // this is where the string containing the wordle # and result is ¯\_(ツ)_/¯
         const shareContent = message.components[0]?.components[0].data.content;
         // if the share command was sent
-        share: if (shareContent != undefined) {
+        if (shareContent != undefined) {
           // ex. Wordle #1505
           const wordleIndex = Number(shareContent.substring(7, 11));
           console.log(
@@ -274,7 +274,7 @@ client.on("messageCreate", async (message) => {
             console.log(
               `Added ${message.interactionMetadata.user.username} to the thread`
             );
-            break share;
+            break;
           }
           // (2) otherwise, a new thread is made
           const thread = await channel.threads.create({
@@ -298,10 +298,10 @@ client.on("messageCreate", async (message) => {
           fileExport(wordle, "wordle.json");
           console.log(`Added wordle #${wordleIndex} to wordle.json`);
         } else
-          playing: if (message.content.includes("is playing")) {
+          if (message.content.includes("is playing")) {
             if (message.channel.id != id.mainChat) {
               message.reply("wrong channel dumbass");
-              break playing;
+              break;
             }
             console.log(message.content);
             message.reply(
