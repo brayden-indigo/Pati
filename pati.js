@@ -210,6 +210,9 @@ client.on("messageCreate", async (message) => {
           });
           exportAura();
         }
+        for (let i = 0; i < aura.length; i++) {
+          if (aura[i].user == id) x = i;
+        }
         message.reply({
           content: `<@${id}> has ${aura[x].aura} aura`,
           allowedMentions: { users: [message.author.id] },
