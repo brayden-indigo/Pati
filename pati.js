@@ -15,6 +15,10 @@ let wordle = JSON.parse(wordleData);
 // loads the pati count data
 let patiCountData = fs.readFileSync("patiCount.json");
 let patiCount = JSON.parse(patiCountData);
+function fileSync(variable, file) {
+  let data = JSON.stringify(variable);
+  fs.writeFileSync(file, data);
+}
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -96,13 +100,14 @@ client.on("messageCreate", async (message) => {
         if (patiCount[i].userId == message.author.id) {
           // (1) if it has, their score increases
           patiCount[i].score++;
-          let jsonPatiCount = JSON.stringify(patiCount);
-          fs.writeFileSync("patiCount.json", jsonPatiCount);
+          fileSync(patiCount, "patiCount.json");
           calcTotal();
           let response = `mrow\n-# you have said my name ${patiCount[i].score} time`;
           patiCount[i].score == 1
             ? // I'm planning on making these reply lines less look horrendous
-              message.reply(`${response}\n-# ${patiCount[0].total} total ${pati}s`)
+              message.reply(
+                `${response}\n-# ${patiCount[0].total} total ${pati}s`
+              )
             : message.reply(
                 `${response}s\n-# ${patiCount[0].total} total ${pati}s`
               );
@@ -114,8 +119,7 @@ client.on("messageCreate", async (message) => {
         userId: `${message.author.id}`,
         score: 1,
       });
-      let jsonPatiCount = JSON.stringify(patiCount);
-      fs.writeFileSync("patiCount.json", jsonPatiCount);
+      fileSync(patiCount, "PatiCount.json");
       let response = `mrow\n-# you have said my name ${
         patiCount[patiCount.length - 1].score
       } time`;
@@ -123,7 +127,9 @@ client.on("messageCreate", async (message) => {
       patiCount[patiCount.length - 1].score == 1
         ? // I'm planning on making these reply lines less look horrendous
           message.reply(`${response}\n-# ${patiCount[0].total} total ${pati}s`)
-        : message.reply(`${response}s\n-# ${patiCount[0].total} total ${pati}s`);
+        : message.reply(
+            `${response}s\n-# ${patiCount[0].total} total ${pati}s`
+          );
     }
     // checks the rest of the autoresponses
     for (let i = 0; i < 3; i++) {
@@ -184,8 +190,7 @@ client.on("messageCreate", async (message) => {
             number: wordleIndex,
             threadId: `${thread.id}`,
           });
-          let jsonWordle = JSON.stringify(wordle);
-          fs.writeFileSync("wordle.json", jsonWordle);
+          fileSync(wordle, "wordle.json");
           console.log(`Added wordle #${wordleIndex} to wordle.json`);
         } else
           playing: if (message.content.includes("is playing")) {
