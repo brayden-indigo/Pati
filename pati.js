@@ -10,8 +10,15 @@ const {
 require("dotenv").config();
 const fs = require("fs");
 // loads the wordle data
-let data = fs.readFileSync("wordle.json");
-let wordle = JSON.parse(data);
+let wordleData = fs.readFileSync("wordle.json");
+let wordle = JSON.parse(wordleData);
+// loads the pati count data
+let patiCountData = fs.readFileSync("patiCount.json");
+let patiCount = JSON.parse(patiCountData);
+function fileSync(variable, file) {
+  let data = JSON.stringify(variable);
+  fs.writeFileSync(file, data);
+}
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -61,7 +68,7 @@ let id = {
     [/^ping/gi, "pong"],
     [/i+ *l+(o+v+e+|u+v+) *(y+o+)*u/gi, "i love you too"],
     [/\bi *l *y/gi, "ily2"],
-    [/\bpa+ti+\b/gi, "mrow"],
+    [/\bp\W*a+\W*t\W*i+\b/gi, "mrow"],
   ],
   emojis = [
     "1381729943268098068",
@@ -72,12 +79,60 @@ let id = {
     "1400326349754728518",
     "1400326563144274050",
   ];
+let pati = "<:pati:1379700481089339392>";
 
 // when a message is created
 client.on("messageCreate", async (message) => {
   // automated response w
   if (!message.author.bot) {
-    for (let i = 0; i < triggers.length; i++) {
+    // if someone says pati
+    patiCount: if (triggers[triggers.length - 1][0].test(message.content)) {
+      function calcTotal() {
+        patiCount[0].total = 0;
+        for (let i = 0; i < patiCount.length; i++) {
+          if (i == 0) continue;
+          patiCount[0].total += patiCount[i].score;
+        }
+      }
+      // checks if their score has been stored
+      for (let i = 0; i < patiCount.length; i++) {
+        if (i == 0) continue;
+        if (patiCount[i].userId == message.author.id) {
+          // (1) if it has, their score increases
+          patiCount[i].score++;
+          fileSync(patiCount, "patiCount.json");
+          calcTotal();
+          let response = `mrow\n-# you have said my name ${patiCount[i].score} time`;
+          patiCount[i].score == 1
+            ? // I'm planning on making these reply lines less look horrendous
+              message.reply(
+                `${response}\n-# ${patiCount[0].total} total ${pati}`
+              )
+            : message.reply(
+                `${response}s\n-# ${patiCount[0].total} total ${pati}`
+              );
+          break patiCount;
+        }
+      }
+      // (2) if it hasn't, they're added to the json file for future reference
+      patiCount.push({
+        userId: `${message.author.id}`,
+        score: 1,
+      });
+      fileSync(patiCount, "PatiCount.json");
+      let response = `mrow\n-# you have said my name ${
+        patiCount[patiCount.length - 1].score
+      } time`;
+      calcTotal();
+      patiCount[patiCount.length - 1].score == 1
+        ? // I'm planning on making these reply lines less look horrendous
+          message.reply(`${response}\n-# ${patiCount[0].total} total ${pati}`)
+        : message.reply(
+            `${response}s\n-# ${patiCount[0].total} total ${pati}`
+          );
+    }
+    // checks the rest of the autoresponses
+    for (let i = 0; i < triggers.length - 1; i++) {
       if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
     }
   }
@@ -135,8 +190,7 @@ client.on("messageCreate", async (message) => {
             number: wordleIndex,
             threadId: `${thread.id}`,
           });
-          let jsonWordle = JSON.stringify(wordle);
-          fs.writeFileSync("wordle.json", jsonWordle);
+          fileSync(wordle, "wordle.json");
           console.log(`Added wordle #${wordleIndex} to wordle.json`);
         } else
           playing: if (message.content.includes("is playing")) {
