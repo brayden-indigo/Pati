@@ -168,7 +168,7 @@ client.on("messageCreate", async (message) => {
       if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
     }
     if (message.content.startsWith("+aura")) {
-      let regex = /\d{18}/;
+      let regex = /\d{18}\d?/;
       let id = message.content.match(regex)[0];
       if (id != undefined) {
         posAura(id);
@@ -182,7 +182,7 @@ client.on("messageCreate", async (message) => {
         });
       } else message.reply("invalid command format");
     } else if (message.content.startsWith("-aura")) {
-      let regex = /\d{18}/;
+      let regex = /\d{18}\d?/;
       let id = message.content.match(regex)[0];
       if (id != undefined) {
         negAura(id);
@@ -196,7 +196,7 @@ client.on("messageCreate", async (message) => {
         });
       } else message.reply("invalid command format");
     } else if (message.content.startsWith("aura")) {
-      let regex = /\d{18}/;
+      let regex = /\d{18}\d?/;
       let id = message.content.match(regex)[0];
       if (id != undefined) {
         let x;
