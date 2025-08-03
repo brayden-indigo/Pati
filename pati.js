@@ -198,22 +198,22 @@ client.on("messageCreate", async (message) => {
     } else if (message.content.startsWith("aura")) {
       let regex = /\d{18}\d?/;
       let id = message.content.match(regex)[0];
-      reply: if (id != undefined) {
+      if (id != undefined) {
         let x;
         for (let i = 0; i < aura.length; i++) {
           if (aura[i].user == id) x = i;
         }
-        if (typeof aura[x].aura == undefined) {
+        if (typeof aura[x] == undefined) {
           message.reply({
             content: `<@${id}> has not obtained any aura`,
             allowedMentions: { users: [message.author.id] },
           });
-          break reply;
+        } else {
+          message.reply({
+            content: `<@${id}> has ${aura[x].aura} aura`,
+            allowedMentions: { users: [message.author.id] },
+          });
         }
-        message.reply({
-          content: `<@${id}> has ${aura[x].aura} aura`,
-          allowedMentions: { users: [message.author.id] },
-        });
       } else message.reply("invalid command format");
     }
   }
