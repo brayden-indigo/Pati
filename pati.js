@@ -67,8 +67,8 @@ function posAura(id) {
   if (!hasAura) {
     aura.push({
       user: `${id}`,
-      aura: 1
-    })
+      aura: 1,
+    });
   }
   aura[0].aura = "Infinity";
   aura[1].aura = "Infinity";
@@ -170,13 +170,44 @@ client.on("messageCreate", async (message) => {
     if (message.content.startsWith("+aura")) {
       let regex = /\d{18}/;
       let id = message.content.match(regex)[0];
-      if (id != undefined) posAura(id);
-      else message.reply("invalid command format");
+      if (id != undefined) {
+        posAura(id);
+        let x;
+        for (let i = 0; i < aura.length; i++) {
+          if (aura[i].user == id) x = i;
+        }
+        message.reply({
+          content: `+1 aura\n<@${id}> now has ${aura[x].aura}`,
+          allowedMentions: { users: [message.author.id] },
+        });
+      } else message.reply("invalid command format");
     } else if (message.content.startsWith("-aura")) {
       let regex = /\d{18}/;
       let id = message.content.match(regex)[0];
-      if (id != undefined) negAura(id);
-      else message.reply("invalid command format");
+      if (id != undefined) {
+        negAura(id);
+        let x;
+        for (let i = 0; i < aura.length; i++) {
+          if (aura[i].user == id) x = i;
+        }
+        message.reply({
+          content: `-1 aura\n<@${id}> now has ${aura[x].aura}`,
+          allowedMentions: { users: [message.author.id] },
+        });
+      } else message.reply("invalid command format");
+    } else if (message.content.startsWith("aura")) {
+      let regex = /\d{18}/;
+      let id = message.content.match(regex)[0];
+      if (id != undefined) {
+        let x;
+        for (let i = 0; i < aura.length; i++) {
+          if (aura[i].user == id) x = i;
+        }
+        message.reply({
+          content: `<@${id}> has ${aura[x].aura}`,
+          allowedMentions: { users: [message.author.id] },
+        });
+      } else message.reply("invalid command format");
     }
   }
   const channel = message.channel;
