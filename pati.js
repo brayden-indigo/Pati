@@ -68,7 +68,10 @@ function exportAura() {
 function posAura(id) {
   let hasAura = true;
   for (let i = 0; i < aura.length; i++) {
-    id == aura[i].user ? aura[i].aura++ : (hasAura = false);
+    if (id == aura[i].user) {
+      aura[i].aura++;
+      hasAura = true;
+    } else hasAura = false;
   }
   if (!hasAura) {
     aura.push({
@@ -81,7 +84,10 @@ function posAura(id) {
 function negAura(id) {
   let hasAura = true;
   for (let i = 0; i < aura.length; i++) {
-    id == aura[i].user ? aura[i].aura-- : (hasAura = false);
+    if (id == aura[i].user) {
+      aura[i].aura--;
+      hasAura = true;
+    } else hasAura = false;
   }
   if (!hasAura) {
     aura.push({
