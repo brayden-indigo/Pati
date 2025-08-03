@@ -81,7 +81,7 @@ client.on("messageCreate", async (message) => {
   // automated response w
   if (!message.author.bot) {
     // if someone says pati
-    patiCount: if (triggers[4][0].test(message.content)) {
+    patiCount: if (triggers[3][0].test(message.content)) {
       // checks if their score has been stored
       for (let i = 0; i < patiCount.length; i++) {
         if (i == 0) continue;
@@ -90,14 +90,11 @@ client.on("messageCreate", async (message) => {
           patiCount[i].score++;
           let jsonPatiCount = JSON.stringify(patiCount);
           fs.writeFileSync("patiCount.json", jsonPatiCount);
+          let response = `mrow\n-# you have said my name ${patiCount[i].score} time`;
           patiCount[i].score == 1
             ? // I'm planning on making these reply lines less look horrendous
-              message.reply(
-                `mrow\n-# you have said my name ${patiCount[i].score} time`
-              )
-            : message.reply(
-                `mrow\n-# you have said my name ${patiCount[i].score} times`
-              );
+              message.reply(response)
+            : message.reply(response + "s");
           break patiCount;
         }
       }
@@ -108,21 +105,16 @@ client.on("messageCreate", async (message) => {
       });
       let jsonPatiCount = JSON.stringify(patiCount);
       fs.writeFileSync("patiCount.json", jsonPatiCount);
+      let response = `mrow\n-# you have said my name ${
+        patiCount[patiCount.length - 1].score
+      } time`;
       patiCount[patiCount.length - 1].score == 1
         ? // I'm planning on making these reply lines less look horrendous
-          message.reply(
-            `mrow\n-# you have said my name ${
-              patiCount[patiCount.length - 1].score
-            } time`
-          )
-        : message.reply(
-            `mrow\n-# you have said my name ${
-              patiCount[patiCount.length - 1].score
-            } times`
-          );
+          message.reply(response)
+        : message.reply(response + "s");
     }
     // checks the rest of the autoresponses
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 3; i++) {
       if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
     }
   }
