@@ -208,10 +208,8 @@ client.on("messageCreate", async (message) => {
             user: `${id}`,
             aura: 0,
           });
+          x = aura.length - 1;
           exportAura();
-        }
-        for (let i = 0; i < aura.length; i++) {
-          if (aura[i].user == id) x = i;
         }
         message.reply({
           content: `<@${id}> has ${aura[x].aura} aura`,
