@@ -80,16 +80,19 @@ let id = {
 client.on("messageCreate", async (message) => {
   // automated response w
   if (!message.author.bot) {
-    let isPati = false;
-    patiCount: if (triggers[3][0].test(message.content)) {
+    // if someone says pati
+    patiCount: if (triggers[4][0].test(message.content)) {
+      // checks if their score has been stored
       for (let i = 0; i < patiCount.length; i++) {
         if (i == 0) continue;
         if (patiCount[i].userId == message.author.id) {
+          // (1) if it has, their score increases
           patiCount[i].score++;
           let jsonPatiCount = JSON.stringify(patiCount);
           fs.writeFileSync("patiCount.json", jsonPatiCount);
           patiCount[i].score == 1
-            ? message.reply(
+            ? // I'm planning on making these reply lines less look horrendous
+              message.reply(
                 `mrow\n-# you have said my name ${patiCount[i].score} time`
               )
             : message.reply(
@@ -98,6 +101,7 @@ client.on("messageCreate", async (message) => {
           break patiCount;
         }
       }
+      // (2) if it hasn't, they're added to the json file for future reference
       patiCount.push({
         userId: `${message.author.id}`,
         score: 1,
@@ -105,7 +109,8 @@ client.on("messageCreate", async (message) => {
       let jsonPatiCount = JSON.stringify(patiCount);
       fs.writeFileSync("patiCount.json", jsonPatiCount);
       patiCount[patiCount.length - 1].score == 1
-        ? message.reply(
+        ? // I'm planning on making these reply lines less look horrendous
+          message.reply(
             `mrow\n-# you have said my name ${
               patiCount[patiCount.length - 1].score
             } time`
@@ -116,7 +121,8 @@ client.on("messageCreate", async (message) => {
             } times`
           );
     }
-    for (let i = 0; i < 3; i++) {
+    // checks the rest of the autoresponses
+    for (let i = 0; i < 4; i++) {
       if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
     }
   }
