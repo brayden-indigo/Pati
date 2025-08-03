@@ -177,7 +177,7 @@ client.on("messageCreate", async (message) => {
           if (aura[i].user == id) x = i;
         }
         message.reply({
-          content: `+1 aura\n<@${id}> now has ${aura[x].aura}`,
+          content: `+1 aura\n<@${id}> now has ${aura[x].aura} aura`,
           allowedMentions: { users: [message.author.id] },
         });
       } else message.reply("invalid command format");
@@ -191,7 +191,7 @@ client.on("messageCreate", async (message) => {
           if (aura[i].user == id) x = i;
         }
         message.reply({
-          content: `-1 aura\n<@${id}> now has ${aura[x].aura}`,
+          content: `-1 aura\n<@${id}> now has ${aura[x].aura} aura`,
           allowedMentions: { users: [message.author.id] },
         });
       } else message.reply("invalid command format");
@@ -203,8 +203,14 @@ client.on("messageCreate", async (message) => {
         for (let i = 0; i < aura.length; i++) {
           if (aura[i].user == id) x = i;
         }
+        if (aura[x] == undefined) {
+          message.reply({
+            content: `<@${id}> has not obtained any aura`,
+            allowedMentions: { users: [message.author.id] },
+          });
+        }
         message.reply({
-          content: `<@${id}> has ${aura[x].aura}`,
+          content: `<@${id}> has ${aura[x].aura} aura`,
           allowedMentions: { users: [message.author.id] },
         });
       } else message.reply("invalid command format");
