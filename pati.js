@@ -106,10 +106,10 @@ client.on("messageCreate", async (message) => {
           patiCount[i].score == 1
             ? // I'm planning on making these reply lines less look horrendous
               message.reply(
-                `${response}\n-# ${patiCount[0].total} total ${pati}s`
+                `${response}\n-# ${patiCount[0].total} total ${pati}`
               )
             : message.reply(
-                `${response}s\n-# ${patiCount[0].total} total ${pati}s`
+                `${response}s\n-# ${patiCount[0].total} total ${pati}`
               );
           break patiCount;
         }
@@ -126,9 +126,9 @@ client.on("messageCreate", async (message) => {
       calcTotal();
       patiCount[patiCount.length - 1].score == 1
         ? // I'm planning on making these reply lines less look horrendous
-          message.reply(`${response}\n-# ${patiCount[0].total} total ${pati}s`)
+          message.reply(`${response}\n-# ${patiCount[0].total} total ${pati}`)
         : message.reply(
-            `${response}s\n-# ${patiCount[0].total} total ${pati}s`
+            `${response}s\n-# ${patiCount[0].total} total ${pati}`
           );
     }
     // checks the rest of the autoresponses
