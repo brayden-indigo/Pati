@@ -198,16 +198,17 @@ client.on("messageCreate", async (message) => {
     } else if (message.content.startsWith("aura")) {
       let regex = /\d{18}\d?/;
       let id = message.content.match(regex)[0];
-      if (id != undefined) {
+      reply: if (id != undefined) {
         let x;
         for (let i = 0; i < aura.length; i++) {
           if (aura[i].user == id) x = i;
         }
-        if (aura[x] == undefined) {
+        if (aura[x].aura == undefined) {
           message.reply({
             content: `<@${id}> has not obtained any aura`,
             allowedMentions: { users: [message.author.id] },
           });
+          break reply;
         }
         message.reply({
           content: `<@${id}> has ${aura[x].aura} aura`,
