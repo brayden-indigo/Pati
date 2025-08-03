@@ -204,7 +204,7 @@ client.on("messageCreate", async (message) => {
           if (aura[i].user == id) x = i;
         }
         if (typeof aura[x] == undefined) {
-          aura.push({
+          await aura.push({
             user: `${id}`,
             aura: 0,
           });
