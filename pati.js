@@ -9,13 +9,13 @@ const {
 } = require("discord.js");
 require("dotenv").config();
 const fs = require("fs");
-// loads the wordle data
-let wordleData = fs.readFileSync("wordle.json");
-let wordle = JSON.parse(wordleData);
-// loads the pati count data
-let patiCountData = fs.readFileSync("patiCount.json");
-let patiCount = JSON.parse(patiCountData);
-function fileSync(variable, file) {
+function fileImport(variable, file) {
+  let data = fs.readFileSync(file);
+  let (variable) = JSON.parse(data);
+}
+fileImport(wordle, "wordle.json")
+fileImport(patiCount, "patiCount.json")
+function fileExport(variable, file) {
   let data = JSON.stringify(variable);
   fs.writeFileSync(file, data);
 }
@@ -100,7 +100,7 @@ client.on("messageCreate", async (message) => {
         if (patiCount[i].userId == message.author.id) {
           // (1) if it has, their score increases
           patiCount[i].score++;
-          fileSync(patiCount, "patiCount.json");
+          fileExport(patiCount, "patiCount.json");
           calcTotal();
           let response = `mrow\n-# you have said my name ${patiCount[i].score} time`;
           patiCount[i].score == 1
@@ -119,7 +119,7 @@ client.on("messageCreate", async (message) => {
         userId: `${message.author.id}`,
         score: 1,
       });
-      fileSync(patiCount, "PatiCount.json");
+      fileExport(patiCount, "PatiCount.json");
       let response = `mrow\n-# you have said my name ${
         patiCount[patiCount.length - 1].score
       } time`;
@@ -127,9 +127,7 @@ client.on("messageCreate", async (message) => {
       patiCount[patiCount.length - 1].score == 1
         ? // I'm planning on making these reply lines less look horrendous
           message.reply(`${response}\n-# ${patiCount[0].total} total ${pati}`)
-        : message.reply(
-            `${response}s\n-# ${patiCount[0].total} total ${pati}`
-          );
+        : message.reply(`${response}s\n-# ${patiCount[0].total} total ${pati}`);
     }
     // checks the rest of the autoresponses
     for (let i = 0; i < triggers.length - 1; i++) {
@@ -190,7 +188,7 @@ client.on("messageCreate", async (message) => {
             number: wordleIndex,
             threadId: `${thread.id}`,
           });
-          fileSync(wordle, "wordle.json");
+          fileExport(wordle, "wordle.json");
           console.log(`Added wordle #${wordleIndex} to wordle.json`);
         } else
           playing: if (message.content.includes("is playing")) {
