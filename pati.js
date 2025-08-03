@@ -201,11 +201,9 @@ client.on("messageCreate", async (message) => {
       if (id != undefined) {
         let x = undefined;
         for (let i = 0; i < aura.length; i++) {
-          console.log(i)
           if (aura[i].user == id) x = i;
         }
         if (x === undefined) {
-          console.log(`is this even working???`)
           aura.push({
             user: `${id}`,
             aura: 0,
