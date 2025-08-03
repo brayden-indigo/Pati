@@ -65,6 +65,7 @@ function exportAura() {
   let data = JSON.stringify(aura);
   fs.writeFileSync("aura.json", data);
 }
+// add aura
 function posAura(id) {
   let hasAura = true;
   for (let i = 0; i < aura.length; i++) {
@@ -81,6 +82,7 @@ function posAura(id) {
   }
   exportAura();
 }
+// subtract aura
 function negAura(id) {
   let hasAura = true;
   for (let i = 0; i < aura.length; i++) {
@@ -173,55 +175,63 @@ client.on("messageCreate", async (message) => {
     for (let i = 0; i < triggers.length - 1; i++) {
       if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
     }
-    if (message.content.startsWith("+aura")) {
-      let regex = /\d{18}\d?/;
-      let id = message.content.match(regex);
-      if (id != undefined) {
-        posAura(id);
-        let x;
-        for (let i = 0; i < aura.length; i++) {
-          if (aura[i].user == id) x = i;
-        }
-        message.reply({
-          content: `+1 aura\n<@${id}> now has ${aura[x].aura} aura`,
-          allowedMentions: { users: [message.author.id] },
-        });
-      }
-    } else if (message.content.startsWith("-aura")) {
-      let regex = /\d{18}\d?/;
-      let id = message.content.match(regex);
-      if (id != undefined) {
-        negAura(id);
-        let x;
-        for (let i = 0; i < aura.length; i++) {
-          if (aura[i].user == id) x = i;
-        }
-        message.reply({
-          content: `-1 aura\n<@${id}> now has ${aura[x].aura} aura`,
-          allowedMentions: { users: [message.author.id] },
-        });
-      } else message.reply("invalid command format");
-    } else if (message.content.startsWith("aura")) {
-      let regex = /\d{18}\d?/;
-      let id = message.content.match(regex);
-      if (id != undefined) {
-        let x = undefined;
-        for (let i = 0; i < aura.length; i++) {
-          if (aura[i].user == id) x = i;
-        }
-        if (x === undefined) {
-          aura.push({
-            user: `${id}`,
-            aura: 0,
+    if (message.content.includes("aura")) {
+      if (message.content.startsWith("+aura")) {
+        message.react("1383119559313195190");
+        let regex = /\d{18}\d?/;
+        let id = message.content.match(regex);
+        if (id != undefined) {
+          posAura(id);
+          let x;
+          for (let i = 0; i < aura.length; i++) {
+            if (aura[i].user == id) x = i;
+          }
+          message.reply({
+            content: `+1 aura\n<@${id}> now has ${aura[x].aura} aura`,
+            allowedMentions: { users: [message.author.id] },
           });
-          x = aura.length - 1;
-          exportAura();
         }
-        message.reply({
-          content: `<@${id}> has ${aura[x].aura} aura`,
-          allowedMentions: { users: [message.author.id] },
-        });
-      } else message.reply("invalid command format");
+      } else if (message.content.startsWith("-aura")) {
+        message.react("1393512157630697472");
+        let regex = /\d{18}\d?/;
+        let id = message.content.match(regex);
+        if (id != undefined) {
+          negAura(id);
+          let x;
+          for (let i = 0; i < aura.length; i++) {
+            if (aura[i].user == id) x = i;
+          }
+          message.reply({
+            content: `-1 aura\n<@${id}> now has ${aura[x].aura} aura`,
+            allowedMentions: { users: [message.author.id] },
+          });
+      } else if (message.content.startsWith("aura")) {
+        let regex = /\d{18}\d?/;
+        let id = message.content.match(regex);
+        if (id != undefined) {
+          let x = undefined;
+          for (let i = 0; i < aura.length; i++) {
+            if (aura[i].user == id) x = i;
+          }
+          if (x === undefined) {
+            aura.push({
+              user: `${id}`,
+              aura: 0,
+            });
+            x = aura.length - 1;
+            exportAura();
+          }
+          message.react(
+            (aura[x].aura === Infinity) ? "1379998042488569856" :
+            (aura[x].aura < 0) ? "1400326349754728518" :
+            (aura[x].aura > 0) ? "1400326245387866224" :
+            "1379998170435551403"
+          )
+          message.reply({
+            content: `<@${id}> has ${aura[x].aura} aura`,
+            allowedMentions: { users: [message.author.id] },
+          });
+      }
     }
   }
   const channel = message.channel;
