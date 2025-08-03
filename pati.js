@@ -208,36 +208,36 @@ client.on("messageCreate", async (message) => {
           content: `-1 aura\n<@${id}> has ${aura[x].aura} aura`,
           allowedMentions: { users: [message.author.id] },
         });
-      } else if (message.content.startsWith("aura")) {
-        let regex = /\d{18}\d?/;
-        let id = message.content.match(regex);
-        if (id != undefined) {
-          let x = undefined;
-          for (let i = 0; i < aura.length; i++) {
-            if (aura[i].user == id) x = i;
-          }
-          if (x === undefined) {
-            aura.push({
-              user: `${id}`,
-              aura: 0,
-            });
-            x = aura.length - 1;
-            exportAura();
-          }
-          message.react(
-            aura[x].aura === Infinity
-              ? "1379998042488569856"
-              : aura[x].aura < 0
-              ? "1400326349754728518"
-              : aura[x].aura > 0
-              ? "1400326245387866224"
-              : "1379998170435551403"
-          );
-          message.reply({
-            content: `<@${id}> has ${aura[x].aura} aura`,
-            allowedMentions: { users: [message.author.id] },
-          });
+      }
+    } else if (message.content.startsWith("aura")) {
+      let regex = /\d{18}\d?/;
+      let id = message.content.match(regex);
+      if (id != undefined) {
+        let x = undefined;
+        for (let i = 0; i < aura.length; i++) {
+          if (aura[i].user == id) x = i;
         }
+        if (x === undefined) {
+          aura.push({
+            user: `${id}`,
+            aura: 0,
+          });
+          x = aura.length - 1;
+          exportAura();
+        }
+        message.react(
+          aura[x].aura === Infinity
+            ? "1379998042488569856"
+            : aura[x].aura < 0
+            ? "1400326349754728518"
+            : aura[x].aura > 0
+            ? "1400326245387866224"
+            : "1379998170435551403"
+        );
+        message.reply({
+          content: `<@${id}> has ${aura[x].aura} aura`,
+          allowedMentions: { users: [message.author.id] },
+        });
       }
     }
     const channel = message.channel;
