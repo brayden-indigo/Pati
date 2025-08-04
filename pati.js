@@ -169,7 +169,10 @@ client.on("messageCreate", async (message) => {
     if (message.content.startsWith("+aura")) {
       message.react("1383119559313195190");
       let regex = /\d{18}\d?/;
-      let id = message.content.match(regex)[0];
+      let id = undefined;
+      if (regex.test(message.content)) {
+        id = message.content.match(regex)[0];
+      }
       console.log(id);
       if (id) {
         posAura(id);
@@ -182,7 +185,10 @@ client.on("messageCreate", async (message) => {
     } else if (message.content.startsWith("-aura")) {
       message.react("1393512157630697472");
       let regex = /\d{18}\d?/;
-      let id = message.content.match(regex)[0];
+      let id = undefined;
+      if (regex.test(message.content)) {
+        id = message.content.match(regex)[0];
+      }
       console.log(id);
       if (id) {
         negAura(id);
@@ -194,7 +200,10 @@ client.on("messageCreate", async (message) => {
       }
     } else if (message.content.startsWith("aura")) {
       let regex = /\d{18}\d?/;
-      let id = message.content.match(regex)[0];
+      let id = undefined;
+      if (regex.test(message.content)) {
+        id = message.content.match(regex)[0];
+      }
       console.log(id);
       if (id) {
         let i = aura.findIndex((a) => a.user == id);
