@@ -170,6 +170,7 @@ client.on("messageCreate", async (message) => {
       message.react("1383119559313195190");
       let regex = /\d{18}\d?/;
       let id = message.content.match(regex)[0];
+      console.log(id);
       if (id) {
         posAura(id);
         let i = aura.findIndex((a) => a.user == id);
@@ -181,7 +182,8 @@ client.on("messageCreate", async (message) => {
     } else if (message.content.startsWith("-aura")) {
       message.react("1393512157630697472");
       let regex = /\d{18}\d?/;
-      let id = message.content.match(regex);
+      let id = message.content.match(regex)[0];
+      console.log(id);
       if (id) {
         negAura(id);
         let i = aura.findIndex((a) => a.user == id);
@@ -193,9 +195,10 @@ client.on("messageCreate", async (message) => {
     } else if (message.content.startsWith("aura")) {
       let regex = /\d{18}\d?/;
       let id = message.content.match(regex)[0];
+      console.log(id);
       if (id) {
         let i = aura.findIndex((a) => a.user == id);
-        if (!i) {
+        if (i == -1) {
           aura.push({
             user: id,
             aura: 0,
@@ -241,7 +244,7 @@ client.on("messageCreate", async (message) => {
           const wordleIndex = Number(shareContent.substring(7, 11)); // ex. Wordle #1505
           let i = wordle.findIndex((w) => w.number == wordleIndex);
           // (1) if the wordle is stored, adds them to it
-          if (i) {
+          if (i != -1) {
             const thread = await message.channel.threads.fetch(
               wordle[i].threadId
             );
