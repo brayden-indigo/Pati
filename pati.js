@@ -87,7 +87,8 @@ client.on("ready", () => {
   console.log("Connected as " + client.user.tag);
   setRuleStatus(0);
 });
-
+let idRegex = /\d{18}\d?/;
+let mentionRegex = /<@\d{18}\d?>/;
 function exportAura() {
   aura[0].aura = "Infinity";
   aura[1].aura = "Infinity";
@@ -107,6 +108,7 @@ async function cooldownTrue(message) {
   });
   setTimeout(() => {
     sentMessage.delete()
+    if (!mentionRegex.test(message.content)) message.delete();
   }, 10000);
 
 }
@@ -219,10 +221,9 @@ client.on("messageCreate", async (message) => {
     }
     if (message.content.startsWith("+aura")) {
       message.react("1383119559313195190");
-      let regex = /\d{18}\d?/;
       let id = undefined;
-      if (regex.test(message.content)) {
-        id = message.content.match(regex)[0];
+      if (idRegex.test(message.content)) {
+        id = message.content.match(idRegex)[0];
       }
       if (id) {
         if (isCooldown(message.author.id)) {
@@ -238,10 +239,9 @@ client.on("messageCreate", async (message) => {
       }
     } else if (message.content.startsWith("-aura")) {
       message.react("1393512157630697472");
-      let regex = /\d{18}\d?/;
       let id = undefined;
-      if (regex.test(message.content)) {
-        id = message.content.match(regex)[0];
+      if (idRegex.test(message.content)) {
+        id = message.content.match(idRegex)[0];
       }
       if (id) {
         if (isCooldown(message.author.id)) {
@@ -256,10 +256,9 @@ client.on("messageCreate", async (message) => {
         });
       }
     } else if (message.content.startsWith("aura")) {
-      let regex = /\d{18}\d?/;
       let id = undefined;
-      if (regex.test(message.content)) {
-        id = message.content.match(regex)[0];
+      if (idRegex.test(message.content)) {
+        id = message.content.match(idRegex)[0];
       }
       if (id) {
         let i = aura.findIndex((a) => a.user == id);
