@@ -94,6 +94,29 @@ function exportAura() {
   let data = JSON.stringify(aura);
   fs.writeFileSync("aura.json", data);
 }
+let cooldowns = [];
+function isCooldown(id) {
+  if (cooldowns.find(user => user == id)) {
+    return true;
+  } else return false;
+}
+async function cooldownTrue(message) {
+  const sentMessage = await message.reply({
+    content: "Please wait 10 minutes between each use of this command!",
+    ephemeral: true,
+  });
+  setTimeout(() => {
+    sentMessage.delete()
+  }, 10000);
+
+}
+function cooldownFalse(id) {
+  cooldowns.push(id);
+  setTimeout(() => {
+    cooldowns = cooldowns.filter((user) => user != id);
+  }, 600000);
+}
+
 // add aura
 function posAura(id) {
   let hasAura = aura.find((a) => a.user == id);
@@ -195,13 +218,16 @@ client.on("messageCreate", async (message) => {
       if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
     }
     if (message.content.startsWith("+aura")) {
+      if (isCooldown(message.author.id)) {
+        cooldownTrue(message);
+        return;
+      } else cooldownFalse(message.author.id);
       message.react("1383119559313195190");
       let regex = /\d{18}\d?/;
       let id = undefined;
       if (regex.test(message.content)) {
         id = message.content.match(regex)[0];
       }
-      console.log(id);
       if (id) {
         posAura(id);
         let i = aura.findIndex((a) => a.user == id);
@@ -211,13 +237,16 @@ client.on("messageCreate", async (message) => {
         });
       }
     } else if (message.content.startsWith("-aura")) {
+      if (isCooldown(message.author.id)) {
+        cooldownTrue(message);
+        return;
+      } else cooldownFalse(message.author.id);
       message.react("1393512157630697472");
       let regex = /\d{18}\d?/;
       let id = undefined;
       if (regex.test(message.content)) {
         id = message.content.match(regex)[0];
       }
-      console.log(id);
       if (id) {
         negAura(id);
         let i = aura.findIndex((a) => a.user == id);
@@ -232,7 +261,6 @@ client.on("messageCreate", async (message) => {
       if (regex.test(message.content)) {
         id = message.content.match(regex)[0];
       }
-      console.log(id);
       if (id) {
         let i = aura.findIndex((a) => a.user == id);
         if (i == -1) {
@@ -330,10 +358,10 @@ client.on("messageCreate", async (message) => {
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
-  const command = interaction.client.commands.get(interaction.commandName)
+  const command = interaction.client.commands.get(interaction.commandName);
 
   if (!command) {
-    console.error(`No command matching ${interaction.commandName} was found.`)
+    console.error(`No command matching ${interaction.commandName} was found.`);
     return;
   }
 
