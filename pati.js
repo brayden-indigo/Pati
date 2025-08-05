@@ -218,10 +218,6 @@ client.on("messageCreate", async (message) => {
       if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
     }
     if (message.content.startsWith("+aura")) {
-      if (isCooldown(message.author.id)) {
-        cooldownTrue(message);
-        return;
-      } else cooldownFalse(message.author.id);
       message.react("1383119559313195190");
       let regex = /\d{18}\d?/;
       let id = undefined;
@@ -229,6 +225,10 @@ client.on("messageCreate", async (message) => {
         id = message.content.match(regex)[0];
       }
       if (id) {
+        if (isCooldown(message.author.id)) {
+        cooldownTrue(message);
+        return;
+      } else cooldownFalse(message.author.id);
         posAura(id);
         let i = aura.findIndex((a) => a.user == id);
         message.reply({
@@ -237,10 +237,6 @@ client.on("messageCreate", async (message) => {
         });
       }
     } else if (message.content.startsWith("-aura")) {
-      if (isCooldown(message.author.id)) {
-        cooldownTrue(message);
-        return;
-      } else cooldownFalse(message.author.id);
       message.react("1393512157630697472");
       let regex = /\d{18}\d?/;
       let id = undefined;
@@ -248,6 +244,10 @@ client.on("messageCreate", async (message) => {
         id = message.content.match(regex)[0];
       }
       if (id) {
+        if (isCooldown(message.author.id)) {
+        cooldownTrue(message);
+        return;
+      } else cooldownFalse(message.author.id);
         negAura(id);
         let i = aura.findIndex((a) => a.user == id);
         message.reply({
