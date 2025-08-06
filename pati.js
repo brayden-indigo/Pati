@@ -9,14 +9,10 @@ const {
 } = require("discord.js");
 require("dotenv").config();
 const fs = require("fs");
-let data1 = fs.readFileSync("aura.json");
-let aura = JSON.parse(data1);
-aura[0].aura = Infinity;
-aura[1].aura = Infinity;
-let data2 = fs.readFileSync("wordle.json");
-let wordle = JSON.parse(data2);
-let data3 = fs.readFileSync("patiCount.json");
-let patiCount = JSON.parse(data3);
+let data1 = fs.readFileSync("wordle.json");
+let wordle = JSON.parse(data1);
+let data2 = fs.readFileSync("patiCount.json");
+let patiCount = JSON.parse(data2);
 function fileExport(variable, file) {
   let data = JSON.stringify(variable);
   fs.writeFileSync(file, data);
@@ -58,41 +54,6 @@ client.on("ready", () => {
   console.log("Connected as " + client.user.tag);
   setRuleStatus(0);
 });
-
-function exportAura() {
-  aura[0].aura = "Infinity";
-  aura[1].aura = "Infinity";
-  let data = JSON.stringify(aura);
-  fs.writeFileSync("aura.json", data);
-}
-// add aura
-function posAura(id) {
-  let hasAura = aura.find((a) => a.user == id);
-  if (hasAura) {
-    let i = aura.findIndex((a) => a.user == id);
-    aura[i].aura++;
-  } else {
-    aura.push({
-      user: id,
-      aura: 1,
-    });
-  }
-  exportAura();
-}
-// subtract aura
-function negAura(id) {
-  let hasAura = aura.find((a) => a.user == id);
-  if (hasAura) {
-    let i = aura.findIndex((a) => a.user == id);
-    aura[i].aura--;
-  } else {
-    aura.push({
-      user: id,
-      aura: -1,
-    });
-  }
-  exportAura();
-}
 
 let id = {
     testServer: "946959817170378803",
@@ -165,61 +126,6 @@ client.on("messageCreate", async (message) => {
     // checks the rest of the autoresponses
     for (let i = 0; i < triggers.length - 1; i++) {
       if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
-    }
-    if (message.content.startsWith("+aura")) {
-      message.react("1383119559313195190");
-      let regex = /\d{18}\d?/;
-      let id = message.content.match(regex)[0];
-      console.log(id);
-      if (id) {
-        posAura(id);
-        let i = aura.findIndex((a) => a.user == id);
-        message.reply({
-          content: `+1 aura\n<@${id}> has ${aura[i].aura} aura`,
-          allowedMentions: { users: [message.author.id] },
-        });
-      }
-    } else if (message.content.startsWith("-aura")) {
-      message.react("1393512157630697472");
-      let regex = /\d{18}\d?/;
-      let id = message.content.match(regex)[0];
-      console.log(id);
-      if (id) {
-        negAura(id);
-        let i = aura.findIndex((a) => a.user == id);
-        message.reply({
-          content: `-1 aura\n<@${id}> has ${aura[i].aura} aura`,
-          allowedMentions: { users: [message.author.id] },
-        });
-      }
-    } else if (message.content.startsWith("aura")) {
-      let regex = /\d{18}\d?/;
-      let id = message.content.match(regex)[0];
-      console.log(id);
-      if (id) {
-        let i = aura.findIndex((a) => a.user == id);
-        if (i == -1) {
-          aura.push({
-            user: id,
-            aura: 0,
-          });
-          i = aura.length - 1;
-          exportAura();
-        }
-        message.react(
-          aura[i].aura == Infinity
-            ? "1379998042488569856"
-            : aura[i].aura < 0
-            ? "1400326349754728518"
-            : aura[i].aura > 0
-            ? "1400326245387866224"
-            : "1379998170435551403"
-        );
-        message.reply({
-          content: `<@${id}> has ${aura[i].aura} aura`,
-          allowedMentions: { users: [message.author.id] },
-        });
-      }
     }
   }
   // makes sure some things only happen in some servers
