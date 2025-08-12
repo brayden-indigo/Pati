@@ -194,25 +194,35 @@ client.on("messageCreate", async (message) => {
       // checks if their score has been stored
       let hasPati = profile.find((p) => p.includes(message.author.id));
       let userPati;
-      const response = (count) => {return `mrow\n-# you have said my name ${count} time`};
+      const response = (count) => {
+        return `mrow\n-# you have said my name ${count} time`;
+      };
       if (hasPati) {
         let i = profile.findIndex((p) => p.includes(message.author.id));
+        profile[i][2]++
         userPati = profile[i][2];
-        userPati++;
         fileExport(profile, "userprofiles.json");
-        totalPati += userPati;
+        totalPati++;
         userPati == 1
           ? // I'm planning on making these reply lines less look horrendous
-            message.reply(`${response(userPati)}\n-# ${totalPati} total ${pati}`)
-          : message.reply(`${response(userPati)}s\n-# ${totalPati} total ${pati}`);
+            message.reply(
+              `${response(userPati)}\n-# ${totalPati} total ${pati}`
+            )
+          : message.reply(
+              `${response(userPati)}s\n-# ${totalPati} total ${pati}`
+            );
       } else {
         newPati(message.author.id);
         userPati = profile[profile.length - 1][2];
-        totalPati += userPati;
+        totalPati++;
         userPati == 1
           ? // I'm planning on making these reply lines less look horrendous
-            message.reply(`${response(userPati)}\n-# ${totalPati} total ${pati}`)
-          : message.reply(`${response(userPati)}s\n-# ${totalPati} total ${pati}`);
+            message.reply(
+              `${response(userPati)}\n-# ${totalPati} total ${pati}`
+            )
+          : message.reply(
+              `${response(userPati)}s\n-# ${totalPati} total ${pati}`
+            );
       }
     }
     // checks the rest of the autoresponses
