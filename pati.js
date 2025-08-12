@@ -13,18 +13,6 @@ const {
 require("dotenv").config();
 const fs = require("node:fs");
 const path = require("node:path");
-let data1 = fs.readFileSync("aura.json");
-let aura = JSON.parse(data1);
-aura[0].aura = Infinity;
-aura[1].aura = Infinity;
-let data2 = fs.readFileSync("wordle.json");
-let wordle = JSON.parse(data2);
-let data3 = fs.readFileSync("patiCount.json");
-let patiCount = JSON.parse(data3);
-function fileExport(variable, file) {
-  let data = JSON.stringify(variable);
-  fs.writeFileSync(file, data);
-}
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -32,6 +20,9 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
   ],
 });
+
+// command loader
+
 client.commands = new Collection();
 
 const foldersPath = path.join(__dirname, "commands");
@@ -57,6 +48,113 @@ for (const folder of commandFolders) {
     }
   }
 }
+
+// functions n variables n stuf
+
+// user[i][x]
+// x = 0: user id
+// 1: aura
+// 2: pati count
+let profileData = fs.readFileSync("userprofiles.json");
+let profile = JSON.parse(profileData);
+profile[0][1] = Infinity;
+profile[1][1] = Infinity;
+let wordleData = fs.readFileSync("wordle.json");
+let wordle = JSON.parse(wordleData);
+
+// variable being the parsed json object and file being the target json file
+function fileExport(variable, file) {
+  profile[0][1] = "Infinity";
+  profile[1][1] = "Infinity";
+  let data = JSON.stringify(variable);
+  fs.writeFileSync(file, data);
+  profile[0][1] = Infinity;
+  profile[1][1] = Infinity;
+}
+
+// used when someone has absolutely no data collected
+function newProfile(id, aura, patiCount) {
+  profile.push([id, aura, patiCount]);
+  fileExport(profile, "userprofiles.json");
+}
+const newAura = (id, aura) => newProfile(id, aura, 0);
+const newPati = (id) => newProfile(id, 0, 1);
+
+// add/subtract aura
+function posAura(id) {
+  let hasAura = profile.find((p) => p.includes(id));
+  if (hasAura) {
+    let i = profile.findIndex((p) => p.includes(id));
+    profile[i][1]++;
+    fileExport(profile, "userprofiles.json");
+  } else newAura(id, 1);
+}
+function negAura(id) {
+  let hasAura = profile.find((p) => p.includes(id));
+  if (hasAura) {
+    let i = profile.findIndex((p) => p.includes(id));
+    profile[i][1]--;
+    fileExport(profile, "userprofiles.json");
+  } else newAura(id, -1);
+}
+
+// command cooldown stuf
+let idRegex = /\d{18}\d?/;
+let mentionRegex = /<@\d{18}\d?>/;
+let cooldowns = [];
+function isCooldown(id) {
+  if (cooldowns.find((user) => user == id)) {
+    return true;
+  } else return false;
+}
+async function cooldownTrue(message) {
+  const reply = await message.reply({
+    content: "Please wait 10 minutes between each use of this command!",
+    ephemeral: true,
+  });
+  setTimeout(() => {
+    reply.delete();
+    // if the trigger message doesn't contain a mention, delete it
+    if (!mentionRegex.test(message.content)) message.delete();
+  }, 10000);
+}
+function cooldownFalse(id) {
+  cooldowns.push(id);
+  setTimeout(() => {
+    cooldowns = cooldowns.filter((user) => user != id);
+  }, 600000);
+}
+
+let ids = {
+    testServer: process.env.testServer,
+    mainServer: process.env.mainServer,
+    wordle: "1211781489931452447",
+    mainChat: "1379708536291983460",
+  },
+  triggers = [
+    [/^ping/gi, "pong"],
+    [/i+ *l+(o+v+e+|u+v+) *(y+o+)*u/gi, "i love you too"],
+    [/\bi *l *y/gi, "ily2"],
+    [/\bp\W*a+\W*t\W*i+\b/gi, "mrow"],
+  ],
+  emojis = [
+    "1381729943268098068",
+    "1379998170435551403",
+    "1383858281604452413",
+    "1381730018316521624",
+    "1400326245387866224",
+    "1400326349754728518",
+    "1400326563144274050",
+  ],
+  pati = "<:pati:1379700481089339392>",
+  totalPati;
+function calcTotal() {
+  totalPati = 0;
+  for (let i = 0; i < profile.length; i++) {
+    totalPati += profile[i][2];
+  }
+}
+calcTotal();
 
 // rotates between rules in its status
 function setRuleStatus(i) {
@@ -87,200 +185,96 @@ client.on("ready", () => {
   console.log("Connected as " + client.user.tag);
   setRuleStatus(0);
 });
-let idRegex = /\d{18}\d?/;
-let mentionRegex = /<@\d{18}\d?>/;
-function exportAura() {
-  aura[0].aura = "Infinity";
-  aura[1].aura = "Infinity";
-  let data = JSON.stringify(aura);
-  fs.writeFileSync("aura.json", data);
-}
-let cooldowns = [];
-function isCooldown(id) {
-  if (cooldowns.find(user => user == id)) {
-    return true;
-  } else return false;
-}
-async function cooldownTrue(message) {
-  const sentMessage = await message.reply({
-    content: "Please wait 10 minutes between each use of this command!",
-    ephemeral: true,
-  });
-  setTimeout(() => {
-    sentMessage.delete()
-    if (!mentionRegex.test(message.content)) message.delete();
-  }, 10000);
-
-}
-function cooldownFalse(id) {
-  cooldowns.push(id);
-  setTimeout(() => {
-    cooldowns = cooldowns.filter((user) => user != id);
-  }, 600000);
-}
-
-// add aura
-function posAura(id) {
-  let hasAura = aura.find((a) => a.user == id);
-  if (hasAura) {
-    let i = aura.findIndex((a) => a.user == id);
-    aura[i].aura++;
-  } else {
-    aura.push({
-      user: id,
-      aura: 1,
-    });
-  }
-  exportAura();
-}
-// subtract aura
-function negAura(id) {
-  let hasAura = aura.find((a) => a.user == id);
-  if (hasAura) {
-    let i = aura.findIndex((a) => a.user == id);
-    aura[i].aura--;
-  } else {
-    aura.push({
-      user: id,
-      aura: -1,
-    });
-  }
-  exportAura();
-}
-
-let id = {
-    testServer: process.env.testServer,
-    mainServer: process.env.mainServer,
-    wordle: "1211781489931452447",
-    mainChat: "1379708536291983460",
-  },
-  triggers = [
-    [/^ping/gi, "pong"],
-    [/i+ *l+(o+v+e+|u+v+) *(y+o+)*u/gi, "i love you too"],
-    [/\bi *l *y/gi, "ily2"],
-    [/\bp\W*a+\W*t\W*i+\b/gi, "mrow"],
-  ],
-  emojis = [
-    "1381729943268098068",
-    "1379998170435551403",
-    "1383858281604452413",
-    "1381730018316521624",
-    "1400326245387866224",
-    "1400326349754728518",
-    "1400326563144274050",
-  ];
-let pati = "<:pati:1379700481089339392>";
 
 client.on("messageCreate", async (message) => {
   // automated response w
   if (!message.author.bot) {
     // if someone says pati
     if (triggers[triggers.length - 1][0].test(message.content)) {
-      function calcTotal() {
-        patiCount[0].total = 0;
-        for (let i = 0; i < patiCount.length; i++) {
-          if (i == 0) continue;
-          patiCount[0].total += patiCount[i].score;
-        }
-      }
       // checks if their score has been stored
-      let hasPati = patiCount.find((a) => a.userId == message.author.id);
+      let hasPati = profile.find((p) => p.includes(message.author.id));
+      let userPati;
+      let response = `mrow\n-# you have said my name ${userPati} time`;
       if (hasPati) {
-        let i = patiCount.findIndex((a) => a.userId == message.author.id);
-        patiCount[i].score++;
-        fileExport(patiCount, "patiCount.json");
-        calcTotal();
-        let response = `mrow\n-# you have said my name ${patiCount[i].score} time`;
-        patiCount[i].score == 1
+        let i = profile.findIndex((p) => p.includes(message.author.id));
+        userPati = profile[i][2];
+        userPati++;
+        fileExport(profile, "userprofiles.json");
+        totalPati += userPati;
+        userPati == 1
           ? // I'm planning on making these reply lines less look horrendous
-            message.reply(`${response}\n-# ${patiCount[0].total} total ${pati}`)
-          : message.reply(
-              `${response}s\n-# ${patiCount[0].total} total ${pati}`
-            );
+            message.reply(`${response}\n-# ${totalPati} total ${pati}`)
+          : message.reply(`${response}s\n-# ${totalPati} total ${pati}`);
       } else {
-        patiCount.push({
-          userId: `${message.author.id}`,
-          score: 1,
-        });
-        fileExport(patiCount, "patiCount.json");
-        let response = `mrow\n-# you have said my name ${
-          patiCount[patiCount.length - 1].score
-        } time`;
-        calcTotal();
-        patiCount[patiCount.length - 1].score == 1
+        newPati(message.author.id);
+        userPati = profile[profile.length - 1][2];
+        totalPati += userPati;
+        userPati == 1
           ? // I'm planning on making these reply lines less look horrendous
-            message.reply(`${response}\n-# ${patiCount[0].total} total ${pati}`)
-          : message.reply(
-              `${response}s\n-# ${patiCount[0].total} total ${pati}`
-            );
+            message.reply(`${response}\n-# ${totalPati} total ${pati}`)
+          : message.reply(`${response}s\n-# ${totalPati} total ${pati}`);
       }
     }
     // checks the rest of the autoresponses
     for (let i = 0; i < triggers.length - 1; i++) {
       if (triggers[i][0].test(message.content)) message.reply(triggers[i][1]);
     }
+    let id = undefined;
     if (message.content.startsWith("+aura")) {
       message.react("1383119559313195190");
-      let id = undefined;
       if (idRegex.test(message.content)) {
         id = message.content.match(idRegex)[0];
       }
       if (id) {
         if (isCooldown(message.author.id)) {
-        cooldownTrue(message);
-        return;
-      } else cooldownFalse(message.author.id);
+          cooldownTrue(message);
+          return;
+        } else cooldownFalse(message.author.id);
         posAura(id);
-        let i = aura.findIndex((a) => a.user == id);
+        let i = profile.findIndex((p) => p.includes(id));
         message.reply({
-          content: `+1 aura\n<@${id}> has ${aura[i].aura} aura`,
+          content: `+1 aura\n<@${id}> has ${profile[i][1]} aura`,
           allowedMentions: { users: [message.author.id] },
         });
       }
     } else if (message.content.startsWith("-aura")) {
       message.react("1393512157630697472");
-      let id = undefined;
       if (idRegex.test(message.content)) {
         id = message.content.match(idRegex)[0];
       }
       if (id) {
         if (isCooldown(message.author.id)) {
-        cooldownTrue(message);
-        return;
-      } else cooldownFalse(message.author.id);
+          cooldownTrue(message);
+          return;
+        } else cooldownFalse(message.author.id);
         negAura(id);
-        let i = aura.findIndex((a) => a.user == id);
+        let i = profile.findIndex((p) => p.includes(id));
         message.reply({
-          content: `-1 aura\n<@${id}> has ${aura[i].aura} aura`,
+          content: `-1 aura\n<@${id}> has ${profile[i][1]} aura`,
           allowedMentions: { users: [message.author.id] },
         });
       }
     } else if (message.content.startsWith("aura")) {
-      let id = undefined;
       if (idRegex.test(message.content)) {
         id = message.content.match(idRegex)[0];
       }
       if (id) {
-        let i = aura.findIndex((a) => a.user == id);
+        let i = profile.findIndex((p) => p.includes(id));
         if (i == -1) {
-          aura.push({
-            user: id,
-            aura: 0,
-          });
-          i = aura.length - 1;
-          exportAura();
+          newAura(id);
+          i = profile.length - 1;
         }
         message.react(
-          aura[i].aura == Infinity
+          profile[i][1] == Infinity
             ? "1379998042488569856"
-            : aura[i].aura < 0
+            : profile[i][1] < 0
             ? "1400326349754728518"
-            : aura[i].aura > 0
+            : profile[i][1] > 0
             ? "1400326245387866224"
             : "1379998170435551403"
         );
         message.reply({
-          content: `<@${id}> has ${aura[i].aura} aura`,
+          content: `<@${id}> has ${profile[i][1]} aura`,
           allowedMentions: { users: [message.author.id] },
         });
       }
@@ -288,10 +282,10 @@ client.on("messageCreate", async (message) => {
   }
   // makes sure some things only happen in some servers
   switch (message.guildId) {
-    case id.testServer:
+    case ids.testServer:
       break;
-    case id.mainServer:
-      if (message.author.id == id.wordle) {
+    case ids.mainServer:
+      if (message.author.id == ids.wordle) {
         // this is where the string containing the wordle # and result is ¯\_(ツ)_/¯
         const shareContent = message.components[0]?.components[0].data.content;
         // if the share command was sent
@@ -342,7 +336,7 @@ client.on("messageCreate", async (message) => {
             console.log(`Added wordle #${wordleIndex} to wordle.json`);
           }
         } else if (message.content.includes("is playing")) {
-          if (message.channel.id != id.mainChat) {
+          if (message.channel.id != ids.mainChat) {
             message.reply("wrong channel dumbass");
             break;
           }

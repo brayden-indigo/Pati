@@ -1,5 +1,4 @@
 /node_modules
 .env
-patiCount.json
 wordle.json
-aura.json
+userprofiles.json
