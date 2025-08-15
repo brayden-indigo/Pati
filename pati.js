@@ -73,21 +73,13 @@ const newAura = (id, aura) => newProfile(id, aura, 0);
 const newPati = (id) => newProfile(id, 0, 1);
 
 // add/subtract aura
-function posAura(id) {
+function incAura(n) {
   let hasAura = profile.find((p) => p.id == id);
   if (hasAura) {
     let i = profile.findIndex((p) => p.id == id);
-    profile[i].aura++;
+    n == 1 ? profile[i].aura++ : profile[i].aura--;
     fileExport(profile, "userprofiles.json");
-  } else newAura(id, 1);
-}
-function negAura(id) {
-  let hasAura = profile.find((p) => p.id == id);
-  if (hasAura) {
-    let i = profile.findIndex((p) => p.id == id);
-    profile[i].aura--;
-    fileExport(profile, "userprofiles.json");
-  } else newAura(id, -1);
+  } else newAura(id, n);
 }
 
 // command cooldown stuf
@@ -232,7 +224,7 @@ client.on("messageCreate", async (message) => {
           cooldownTrue(message);
           return;
         } else cooldownFalse(message.author.id);
-        posAura(id);
+        incAura(1);
         let i = profile.findIndex((p) => p.id == id);
         message.reply({
           content: `+1 aura\n<@${id}> has ${profile[i].aura} aura`,
@@ -249,7 +241,7 @@ client.on("messageCreate", async (message) => {
           cooldownTrue(message);
           return;
         } else cooldownFalse(message.author.id);
-        negAura(id);
+        incAura(-1);
         let i = profile.findIndex((p) => p.id == id);
         message.reply({
           content: `-1 aura\n<@${id}> has ${profile[i].aura} aura`,
