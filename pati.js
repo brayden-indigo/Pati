@@ -73,7 +73,7 @@ const newAura = (id, aura) => newProfile(id, aura, 0);
 const newPati = (id) => newProfile(id, 0, 1);
 
 // add/subtract aura
-function incAura(n) {
+function incAura(id, n) {
   let hasAura = profile.find((p) => p.id == id);
   if (hasAura) {
     let i = profile.findIndex((p) => p.id == id);
@@ -224,7 +224,7 @@ client.on("messageCreate", async (message) => {
           cooldownTrue(message);
           return;
         } else cooldownFalse(message.author.id);
-        incAura(1);
+        incAura(id, 1);
         let i = profile.findIndex((p) => p.id == id);
         message.reply({
           content: `+1 aura\n<@${id}> has ${profile[i].aura} aura`,
@@ -241,7 +241,7 @@ client.on("messageCreate", async (message) => {
           cooldownTrue(message);
           return;
         } else cooldownFalse(message.author.id);
-        incAura(-1);
+        incAura(id, -1);
         let i = profile.findIndex((p) => p.id == id);
         message.reply({
           content: `-1 aura\n<@${id}> has ${profile[i].aura} aura`,
