@@ -64,12 +64,8 @@ let wordle = JSON.parse(wordleData);
 
 // variable being the parsed json object and file being the target json file
 function fileExport(variable, file) {
-  profile[0][1] = "Infinity";
-  profile[1][1] = "Infinity";
   let data = JSON.stringify(variable);
   fs.writeFileSync(file, data);
-  profile[0][1] = Infinity;
-  profile[1][1] = Infinity;
 }
 
 // used when someone has absolutely no data collected
