@@ -51,14 +51,10 @@ for (const folder of commandFolders) {
 
 // functions n variables n stuf
 
-// user[i][x]
-// x = 0: user id
-// 1: aura
-// 2: pati count
 let profileData = fs.readFileSync("userprofiles.json");
 let profile = JSON.parse(profileData);
-profile[0][1] = Infinity;
-profile[1][1] = Infinity;
+profile[0].aura = Infinity;
+profile[1].aura = Infinity;
 let wordleData = fs.readFileSync("wordle.json");
 let wordle = JSON.parse(wordleData);
 
@@ -70,7 +66,7 @@ function fileExport(variable, file) {
 
 // used when someone has absolutely no data collected
 function newProfile(id, aura, patiCount) {
-  profile.push([id, aura, patiCount]);
+  profile.push({"id":id, "aura":aura, pati:patiCount});
   fileExport(profile, "userprofiles.json");
 }
 const newAura = (id, aura) => newProfile(id, aura, 0);
@@ -78,18 +74,18 @@ const newPati = (id) => newProfile(id, 0, 1);
 
 // add/subtract aura
 function posAura(id) {
-  let hasAura = profile.find((p) => p.includes(id));
+  let hasAura = profile.find((p) => p.id == id);
   if (hasAura) {
-    let i = profile.findIndex((p) => p.includes(id));
-    profile[i][1]++;
+    let i = profile.findIndex((p) => p.id == id);
+    profile[i].aura++;
     fileExport(profile, "userprofiles.json");
   } else newAura(id, 1);
 }
 function negAura(id) {
-  let hasAura = profile.find((p) => p.includes(id));
+  let hasAura = profile.find((p) => p.id == id);
   if (hasAura) {
-    let i = profile.findIndex((p) => p.includes(id));
-    profile[i][1]--;
+    let i = profile.findIndex((p) => p.id == id);
+    profile[i].aura--;
     fileExport(profile, "userprofiles.json");
   } else newAura(id, -1);
 }
@@ -147,7 +143,7 @@ let ids = {
 function calcTotal() {
   totalPati = 0;
   for (let i = 0; i < profile.length; i++) {
-    totalPati += profile[i][2];
+    totalPati += profile[i].pati;
   }
 }
 calcTotal();
@@ -188,15 +184,15 @@ client.on("messageCreate", async (message) => {
     // if someone says pati
     if (triggers[triggers.length - 1][0].test(message.content)) {
       // checks if their score has been stored
-      let hasPati = profile.find((p) => p.includes(message.author.id));
+      let hasPati = profile.find((p) => p.id == message.author.id);
       let userPati;
       const response = (count) => {
         return `mrow\n-# you have said my name ${count} time`;
       };
       if (hasPati) {
-        let i = profile.findIndex((p) => p.includes(message.author.id));
-        profile[i][2]++
-        userPati = profile[i][2];
+        let i = profile.findIndex((p) => p.id == message.author.id);
+        profile[i].pati++
+        userPati = profile[i].pati;
         fileExport(profile, "userprofiles.json");
         totalPati++;
         userPati == 1
@@ -209,7 +205,7 @@ client.on("messageCreate", async (message) => {
             );
       } else {
         newPati(message.author.id);
-        userPati = profile[profile.length - 1][2];
+        userPati = profile[profile.length - 1].pati;
         totalPati++;
         userPati == 1
           ? // I'm planning on making these reply lines less look horrendous
@@ -237,9 +233,9 @@ client.on("messageCreate", async (message) => {
           return;
         } else cooldownFalse(message.author.id);
         posAura(id);
-        let i = profile.findIndex((p) => p.includes(id));
+        let i = profile.findIndex((p) => p.id == id);
         message.reply({
-          content: `+1 aura\n<@${id}> has ${profile[i][1]} aura`,
+          content: `+1 aura\n<@${id}> has ${profile[i].aura} aura`,
           allowedMentions: { users: [message.author.id] },
         });
       }
@@ -254,9 +250,9 @@ client.on("messageCreate", async (message) => {
           return;
         } else cooldownFalse(message.author.id);
         negAura(id);
-        let i = profile.findIndex((p) => p.includes(id));
+        let i = profile.findIndex((p) => p.id == id);
         message.reply({
-          content: `-1 aura\n<@${id}> has ${profile[i][1]} aura`,
+          content: `-1 aura\n<@${id}> has ${profile[i].aura} aura`,
           allowedMentions: { users: [message.author.id] },
         });
       }
@@ -265,22 +261,22 @@ client.on("messageCreate", async (message) => {
         id = message.content.match(idRegex)[0];
       }
       if (id) {
-        let i = profile.findIndex((p) => p.includes(id));
+        let i = profile.findIndex((p) => p.id == id);
         if (i == -1) {
           newAura(id);
           i = profile.length - 1;
         }
         message.react(
-          profile[i][1] == Infinity
+          profile[i].aura == Infinity
             ? "1379998042488569856"
-            : profile[i][1] < 0
+            : profile[i].aura < 0
             ? "1400326349754728518"
-            : profile[i][1] > 0
+            : profile[i].aura > 0
             ? "1400326245387866224"
             : "1379998170435551403"
         );
         message.reply({
-          content: `<@${id}> has ${profile[i][1]} aura`,
+          content: `<@${id}> has ${profile[i].aura} aura`,
           allowedMentions: { users: [message.author.id] },
         });
       }
