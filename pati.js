@@ -255,7 +255,7 @@ client.on("messageCreate", async (message) => {
       if (id) {
         let i = profile.findIndex((p) => p.id == id);
         if (i == -1) {
-          newAura(id);
+          newAura(id, 0);
           i = profile.length - 1;
         }
         message.react(
