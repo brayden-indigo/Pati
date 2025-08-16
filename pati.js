@@ -66,7 +66,7 @@ function fileExport(variable, file) {
 
 // used when someone has absolutely no data collected
 function newProfile(id, aura, patiCount) {
-  profile.push({"id":id, "aura":aura, pati:patiCount});
+  profile.push({ id: id, aura: aura, pati: patiCount });
   fileExport(profile, "userprofiles.json");
 }
 const newAura = (id, aura) => newProfile(id, aura, 0);
@@ -74,10 +74,13 @@ const newPati = (id) => newProfile(id, 0, 1);
 
 // add/subtract aura
 function incAura(id, n) {
-  let hasAura = profile.find((p) => p.id == id);
-  if (hasAura) {
-    let i = profile.findIndex((p) => p.id == id);
-    n == 1 ? profile[i].aura++ : profile[i].aura--;
+  let i = profile.findIndex((p) => p.id == id);
+  if (i != -1) {
+    n == 1
+      ? profile[i].aura++
+      : n == -1
+      ? profile[i].aura--
+      : (profile[i].aura += n);
     fileExport(profile, "userprofiles.json");
   } else newAura(id, n);
 }
@@ -183,7 +186,7 @@ client.on("messageCreate", async (message) => {
       };
       if (hasPati) {
         let i = profile.findIndex((p) => p.id == message.author.id);
-        profile[i].pati++
+        profile[i].pati++;
         userPati = profile[i].pati;
         fileExport(profile, "userprofiles.json");
         totalPati++;
