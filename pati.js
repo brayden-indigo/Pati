@@ -179,13 +179,12 @@ client.on("messageCreate", async (message) => {
     // if someone says pati
     if (triggers[triggers.length - 1][0].test(message.content)) {
       // checks if their score has been stored
-      let hasPati = profile.find((p) => p.id == message.author.id);
+      let i = profile.findIndex((p) => p.id == message.author.id);
       let userPati;
       const response = (count) => {
         return `mrow\n-# you have said my name ${count} time`;
       };
-      if (hasPati) {
-        let i = profile.findIndex((p) => p.id == message.author.id);
+      if (i != -1) {
         profile[i].pati++;
         userPati = profile[i].pati;
         fileExport(profile, "userprofiles.json");
