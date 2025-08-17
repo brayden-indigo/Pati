@@ -76,11 +76,7 @@ const newPati = (id) => newProfile(id, 0, 1);
 function incAura(id, n) {
   let i = profile.findIndex((p) => p.id == id);
   if (i != -1) {
-    n == 1
-      ? profile[i].aura++
-      : n == -1
-      ? profile[i].aura--
-      : (profile[i].aura += n);
+    profile[i].aura += n;
     fileExport(profile, "userprofiles.json");
   } else newAura(id, n);
 }
@@ -224,21 +220,26 @@ client.on("messageCreate", async (message) => {
     }
     let id = undefined;
     if (message.content.startsWith("+aura")) {
-      message.react("1383119559313195190");
-      if (idRegex.test(message.content)) {
-        id = message.content.match(idRegex)[0];
-      }
-      if (id) {
-        if (isCooldown(message.author.id)) {
-          cooldownTrue(message);
-          return;
-        } else cooldownFalse(message.author.id);
-        incAura(id, 1);
-        let i = profile.findIndex((p) => p.id == id);
-        message.reply({
-          content: `+1 aura\n<@${id}> has ${profile[i].aura} aura`,
-          allowedMentions: { users: [message.author.id] },
-        });
+      if (message.content.match(idRegex) == message.author.id) {
+        message.reply("# <:pointlaugh:1406771789182533796>\n-1 aura");
+        incAura(message.author.id, -1)
+      } else {
+        message.react("1383119559313195190");
+        if (idRegex.test(message.content)) {
+          id = message.content.match(idRegex)[0];
+        }
+        if (id) {
+          if (isCooldown(message.author.id)) {
+            cooldownTrue(message);
+            return;
+          } else cooldownFalse(message.author.id);
+          incAura(id, 1);
+          let i = profile.findIndex((p) => p.id == id);
+          message.reply({
+            content: `+1 aura\n<@${id}> has ${profile[i].aura} aura`,
+            allowedMentions: { users: [message.author.id] },
+          });
+        }
       }
     } else if (message.content.startsWith("-aura")) {
       message.react("1393512157630697472");
