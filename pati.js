@@ -266,26 +266,24 @@ client.on("messageCreate", async (message) => {
       if (idRegex.test(message.content)) {
         id = message.content.match(idRegex)[0];
       } else id = message.author.id;
-      if (id) {
-        let i = profile.findIndex((p) => p.id == id);
-        if (i == -1) {
-          newAura(id, 0);
-          i = profile.length - 1;
-        }
-        message.react(
-          profile[i].aura == Infinity
-            ? "1379998042488569856"
-            : profile[i].aura < 0
-            ? "1400326349754728518"
-            : profile[i].aura > 0
-            ? "1400326245387866224"
-            : "1379998170435551403"
-        );
-        message.reply({
-          content: `<@${id}> has ${profile[i].aura} aura`,
-          allowedMentions: { users: [message.author.id] },
-        });
+      let i = profile.findIndex((p) => p.id == id);
+      if (i == -1) {
+        newAura(id, 0);
+        i = profile.length - 1;
       }
+      message.react(
+        profile[i].aura == Infinity
+          ? "1379998042488569856"
+          : profile[i].aura < 0
+          ? "1400326349754728518"
+          : profile[i].aura > 0
+          ? "1400326245387866224"
+          : "1379998170435551403"
+      );
+      message.reply({
+        content: `<@${id}> has ${profile[i].aura} aura`,
+        allowedMentions: { users: [message.author.id] },
+      });
     }
   }
   // makes sure some things only happen in some servers
