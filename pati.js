@@ -100,9 +100,21 @@ async function cooldownTrue(message) {
     ephemeral: true,
   });
   setTimeout(() => {
-    reply.delete();
+    reply.delete().catch((err) => {
+      // DiscordAPIError: Unknown Message
+      if (err.code === 10008) {
+        message.channel.send("🗿");
+      } else console.error("an error occured:", err);
+    });
     // if the trigger message doesn't contain a mention, delete it
-    if (!mentionRegex.test(message.content)) message.delete();
+    if (!mentionRegex.test(message.content)) {
+      message.delete().catch((err) => {
+        // DiscordAPIError: Unknown Message
+        if (err.code === 10008) {
+          message.channel.send("🗿");
+        } else console.error("An error occurred:", err);
+      });
+    }
   }, 10000);
 }
 function cooldownFalse(id) {
