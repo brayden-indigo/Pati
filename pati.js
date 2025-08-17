@@ -222,7 +222,7 @@ client.on("messageCreate", async (message) => {
     if (message.content.startsWith("+aura")) {
       if (message.content.match(idRegex) == message.author.id) {
         message.reply("<:pointlaugh:1406771789182533796> -1 aura");
-        incAura(message.author.id, -1)
+        incAura(message.author.id, -1);
         if (isCooldown(message.author.id)) {
           cooldownTrue(message);
           return;
@@ -265,7 +265,7 @@ client.on("messageCreate", async (message) => {
     } else if (message.content.startsWith("aura")) {
       if (idRegex.test(message.content)) {
         id = message.content.match(idRegex)[0];
-      }
+      } else id = message.author.id;
       if (id) {
         let i = profile.findIndex((p) => p.id == id);
         if (i == -1) {
