@@ -221,8 +221,12 @@ client.on("messageCreate", async (message) => {
     let id = undefined;
     if (message.content.startsWith("+aura")) {
       if (message.content.match(idRegex) == message.author.id) {
-        message.reply("# <:pointlaugh:1406771789182533796>\n-1 aura");
+        message.reply("<:pointlaugh:1406771789182533796> -1 aura");
         incAura(message.author.id, -1)
+        if (isCooldown(message.author.id)) {
+          cooldownTrue(message);
+          return;
+        } else cooldownFalse(message.author.id);
       } else {
         message.react("1383119559313195190");
         if (idRegex.test(message.content)) {
