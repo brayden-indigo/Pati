@@ -134,14 +134,7 @@ let ids = {
     "1400326563144274050",
   ],
   pati = "<:pati:1379700481089339392>",
-  totalPati;
-function calcTotal() {
-  totalPati = 0;
-  for (let i = 0; i < profile.length; i++) {
-    totalPati += profile[i].pati;
-  }
-}
-calcTotal();
+  totalPati = profile.reduce((acc, curr) => acc + curr.pati, 0);
 
 // rotates between rules in its status
 function setRuleStatus(i) {
@@ -210,6 +203,8 @@ client.on("messageCreate", async (message) => {
               `${response(userPati)}s\n-# ${totalPati} total ${pati}`
             );
       }
+      if (totalPati.toString().endsWith("0"))
+        console.log(`${totalPati} total pati`);
     }
     // checks the rest of the autoresponses
     for (let i = 0; i < triggers.length - 1; i++) {
