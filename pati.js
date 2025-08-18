@@ -115,13 +115,28 @@ async function cooldownTrue(message) {
   }, 10000);
 }
 function cooldownFalse(id) {
+  let user = profile.find((user) => user.id == id);
+  if (!user) {
+    newProfile(id, 0, 0);
+    user = profile.find((user) => user.id == id);
+  }
+  let formula =
+    user.aura < 0
+      ? Math.round(Math.sqrt(Math.abs(user.aura))) / Math.abs(user.aura)
+      : Math.round(Math.sqrt(Math.abs(user.aura)));
+  if (!formula) formula = 1;
+  console.log(formula);
+  if (formula == 0) formula = 1;
+  let timestamp = 600000 / formula;
+  console.log(timestamp);
   cooldowns.push({
     id: id,
-    timestamp: Math.floor((Date.now() + 600000) / 1000),
+    timestamp: Math.floor((Date.now() + timestamp) / 1000),
   });
+  console.log(cooldowns[cooldowns.length - 1].timestamp);
   setTimeout(() => {
     cooldowns = cooldowns.filter((user) => user != id);
-  }, 600000);
+  }, timestamp);
 }
 
 let ids = {
