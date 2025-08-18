@@ -127,14 +127,15 @@ function cooldownFalse(id) {
       ? Math.round(Math.sqrt(Math.abs(user.aura))) / Math.abs(user.aura)
       : Math.round(Math.sqrt(Math.abs(user.aura)));
   if (!formula) formula = 1;
-  if (formula == 0) formula = 1;
   let timestamp = 600000 / formula;
   cooldowns.push({
     id: id,
     timestamp: Math.floor((Date.now() + timestamp) / 1000),
   });
   setTimeout(() => {
-    cooldowns = cooldowns.filter((user) => user != id);
+    console.log(cooldowns)
+    cooldowns = cooldowns.filter((user) => user.id != id);
+    console.log(cooldowns);
   }, timestamp);
 }
 
