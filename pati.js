@@ -121,7 +121,9 @@ function cooldownFalse(id) {
     user = profile.find((user) => user.id == id);
   }
   let formula =
-    user.aura < 0
+    user.aura == Infinity
+      ? 600000
+      : user.aura < 0
       ? Math.round(Math.sqrt(Math.abs(user.aura))) / Math.abs(user.aura)
       : Math.round(Math.sqrt(Math.abs(user.aura)));
   if (!formula) formula = 1;
