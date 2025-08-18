@@ -86,13 +86,14 @@ let idRegex = /\d{18}\d?/;
 let mentionRegex = /<@\d{18}\d?>/;
 let cooldowns = [];
 function isCooldown(id) {
-  if (cooldowns.find((user) => user == id)) {
+  if (cooldowns.find((user) => user.id == id)) {
     return true;
   } else return false;
 }
 async function cooldownTrue(message) {
+  let i = cooldowns.findIndex((user) => user.id == message.author.id);
   const reply = await message.reply({
-    content: "Please wait 10 minutes between each use of this command!",
+    content: `You can send this command again <t:${cooldowns[i].timestamp}:R>`,
     ephemeral: true,
   });
   setTimeout(() => {
@@ -114,7 +115,10 @@ async function cooldownTrue(message) {
   }, 10000);
 }
 function cooldownFalse(id) {
-  cooldowns.push(id);
+  cooldowns.push({
+    id: id,
+    timestamp: Math.floor((Date.now() + 600000) / 1000),
+  });
   setTimeout(() => {
     cooldowns = cooldowns.filter((user) => user != id);
   }, 600000);
