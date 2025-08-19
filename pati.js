@@ -120,20 +120,29 @@ function cooldownFalse(id) {
     newProfile(id, 0, 0);
     user = profile.find((user) => user.id == id);
   }
+  function sqrt(n, p) {
+    for (let i = 0; i < (p - 1); i++) {
+      n = Math.sqrt(Math.abs(n));
+    }
+    return n;
+  }
+  let baseFormula = sqrt(user.aura, 2)
+  console.log(baseFormula);
   let formula =
     user.aura == Infinity
       ? 600000
       : user.aura < 0
-      ? Math.round(Math.sqrt(Math.abs(user.aura))) / Math.abs(user.aura)
-      : Math.round(Math.sqrt(Math.abs(user.aura)));
+      ? baseFormula / Math.abs(user.aura)
+      : baseFormula;
   if (!formula) formula = 1;
+  console.log(formula);
   let timestamp = 600000 / formula;
   cooldowns.push({
     id: id,
     timestamp: Math.floor((Date.now() + timestamp) / 1000),
   });
   setTimeout(() => {
-    console.log(cooldowns)
+    console.log(cooldowns);
     cooldowns = cooldowns.filter((user) => user.id != id);
     console.log(cooldowns);
   }, timestamp);
