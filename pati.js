@@ -114,38 +114,33 @@ async function cooldownTrue(message) {
     }
   }, 10000);
 }
-function cooldownFalse(id) {
+function calcCooldown(id, value = "cooldown") {
   let user = profile.find((user) => user.id == id);
   if (!user) {
     newProfile(id, 0, 0);
     user = profile.find((user) => user.id == id);
   }
-  function sqrt(n, p) {
-    for (let i = 0; i < (p - 1); i++) {
-      n = Math.sqrt(Math.abs(n));
-    }
-    return n;
-  }
-  let baseFormula = sqrt(user.aura, 2)
-  console.log(baseFormula);
+  const minutes = (minutes = 1) => minutes * 60000;
+  let baseFormula = Math.sqrt(Math.abs(user.aura)) * minutes(1);
   let formula =
     user.aura == Infinity
-      ? 600000
+      ? minutes(10)
       : user.aura < 0
-      ? baseFormula / Math.abs(user.aura)
+      ? baseFormula * -1
       : baseFormula;
-  if (!formula) formula = 1;
-  console.log(formula);
-  let timestamp = 600000 / formula;
+  let timestamp = minutes(10) - formula;
+  return value == "timestamp" ? timestamp : Math.round(timestamp / minutes(1));
+}
+function cooldownFalse(id) {
   cooldowns.push({
     id: id,
-    timestamp: Math.floor((Date.now() + timestamp) / 1000),
+    timestamp: Math.floor((Date.now() + calcCooldown(id, "timestamp")) / 1000),
   });
+  console.log(cooldowns);
   setTimeout(() => {
-    console.log(cooldowns);
     cooldowns = cooldowns.filter((user) => user.id != id);
     console.log(cooldowns);
-  }, timestamp);
+  }, calcCooldown(id, "timestamp"));
 }
 
 let ids = {
@@ -312,6 +307,8 @@ client.on("messageCreate", async (message) => {
         content: `<@${id}> has ${profile[i].aura} aura`,
         allowedMentions: { users: [message.author.id] },
       });
+    } else if (message.content.startsWith("cooldown")) {
+      message.reply(calcCooldown(message.author.id) + " minutes");
     }
   }
   // makes sure some things only happen in some servers
