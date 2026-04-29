@@ -21,6 +21,9 @@ const client = new Client({
   ],
 });
 
+//MEOW: configurable data directory - defaults to working directory
+const dataDir = process.env.DATA_ROOT || process.cwd();
+
 // command loader
 
 client.commands = new Collection();
@@ -51,17 +54,17 @@ for (const folder of commandFolders) {
 
 // functions n variables n stuf
 
-let profileData = fs.readFileSync("userprofiles.json");
+let profileData = fs.readFileSync(path.join(dataDir, "userprofiles.json"));
 let profile = JSON.parse(profileData);
 profile[0].aura = Infinity;
 profile[1].aura = Infinity;
-let wordleData = fs.readFileSync("wordle.json");
+let wordleData = fs.readFileSync(path.join(dataDir, "wordle.json"));
 let wordle = JSON.parse(wordleData);
 
 // variable being the parsed json object and file being the target json file
 function fileExport(variable, file) {
   let data = JSON.stringify(variable);
-  fs.writeFileSync(file, data);
+  fs.writeFileSync(path.join(dataDir, file), data);
 }
 
 // used when someone has absolutely no data collected
