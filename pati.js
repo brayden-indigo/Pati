@@ -9,6 +9,7 @@ const {
   Collection,
   Events,
   MessageFlags,
+  MessageReaction,
 } = require("discord.js");
 require("dotenv").config();
 const fs = require("node:fs");
@@ -18,6 +19,7 @@ const client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMessageReactions,
   ],
 });
 
@@ -46,7 +48,7 @@ for (const folder of commandFolders) {
       client.commands.set(command.data.name, command);
     } else {
       console.log(
-        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
       );
     }
   }
@@ -60,6 +62,8 @@ profile[0].aura = Infinity;
 profile[1].aura = Infinity;
 let wordleData = fs.readFileSync(path.join(dataDir, "wordle.json"));
 let wordle = JSON.parse(wordleData);
+let msgboardData = fs.readFileSync(path.join(dataDir, "msgboard.json"));
+let msgboard = JSON.parse(msgboardData);
 
 // variable being the parsed json object and file being the target json file
 function fileExport(variable, file) {
@@ -129,8 +133,8 @@ function calcCooldown(id, value = "cooldown") {
     user.aura == Infinity
       ? minutes(10)
       : user.aura < 0
-      ? baseFormula * -1
-      : baseFormula;
+        ? baseFormula * -1
+        : baseFormula;
   let timestamp = minutes(10) - formula;
   return value == "timestamp" ? timestamp : Math.round(timestamp / minutes(1));
 }
@@ -140,10 +144,13 @@ function cooldownFalse(id) {
     timestamp: Math.floor((Date.now() + calcCooldown(id, "timestamp")) / 1000),
   });
   console.log(cooldowns);
-  setTimeout(() => {
-    cooldowns = cooldowns.filter((user) => user.id != id);
-    console.log(cooldowns);
-  }, calcCooldown(id, "timestamp"));
+  setTimeout(
+    () => {
+      cooldowns = cooldowns.filter((user) => user.id != id);
+      console.log(cooldowns);
+    },
+    calcCooldown(id, "timestamp"),
+  );
 }
 
 let ids = {
@@ -151,6 +158,7 @@ let ids = {
     mainServer: 1379699654836617260,
     wordle: "1211781489931452447",
     mainChat: "1379708536291983460",
+    msgboardChannel: "1394867449618497577",
   },
   triggers = [
     [/^ping/gi, "pong"],
@@ -219,10 +227,10 @@ client.on("messageCreate", async (message) => {
         userPati == 1
           ? // I'm planning on making these reply lines less look horrendous
             message.reply(
-              `${response(userPati)}\n-# ${totalPati} total ${pati}`
+              `${response(userPati)}\n-# ${totalPati} total ${pati}`,
             )
           : message.reply(
-              `${response(userPati)}s\n-# ${totalPati} total ${pati}`
+              `${response(userPati)}s\n-# ${totalPati} total ${pati}`,
             );
       } else {
         newPati(message.author.id);
@@ -231,10 +239,10 @@ client.on("messageCreate", async (message) => {
         userPati == 1
           ? // I'm planning on making these reply lines less look horrendous
             message.reply(
-              `${response(userPati)}\n-# ${totalPati} total ${pati}`
+              `${response(userPati)}\n-# ${totalPati} total ${pati}`,
             )
           : message.reply(
-              `${response(userPati)}s\n-# ${totalPati} total ${pati}`
+              `${response(userPati)}s\n-# ${totalPati} total ${pati}`,
             );
       }
       if (totalPati.toString().endsWith("0"))
@@ -301,10 +309,10 @@ client.on("messageCreate", async (message) => {
         profile[i].aura == Infinity
           ? "1379998042488569856"
           : profile[i].aura < 0
-          ? "1400326349754728518"
-          : profile[i].aura > 0
-          ? "1400326245387866224"
-          : "1379998170435551403"
+            ? "1400326349754728518"
+            : profile[i].aura > 0
+              ? "1400326245387866224"
+              : "1379998170435551403",
       );
       message.reply({
         content: `<@${id}> has ${profile[i].aura} aura`,
@@ -325,7 +333,7 @@ client.on("messageCreate", async (message) => {
         // if the share command was sent
         if (shareContent) {
           console.log(
-            `${message.interactionMetadata.user.username} shared ${shareContent}`
+            `${message.interactionMetadata.user.username} shared ${shareContent}`,
           );
           // looks for the i in "i/6"
           let wordleResult = shareContent.charAt(12);
@@ -338,12 +346,12 @@ client.on("messageCreate", async (message) => {
           // (1) if the wordle is stored, adds them to it
           if (i != -1) {
             const thread = await message.channel.threads.fetch(
-              wordle[i].threadId
+              wordle[i].threadId,
             );
             await thread.members.add(message.interactionMetadata.user.id);
             message.forward(thread);
             console.log(
-              `Added ${message.interactionMetadata.user.username} to the thread`
+              `Added ${message.interactionMetadata.user.username} to the thread`,
             );
             // (2) if it's not, makes a new thread
           } else {
@@ -359,7 +367,7 @@ client.on("messageCreate", async (message) => {
             thread.members.add(message.interactionMetadata.user.id);
             message.forward(thread);
             console.log(
-              `Added ${message.interactionMetadata.user.username} to thread`
+              `Added ${message.interactionMetadata.user.username} to thread`,
             );
             // store the shared wordle
             wordle.push({
@@ -375,13 +383,30 @@ client.on("messageCreate", async (message) => {
             break;
           }
           message.reply(
-            "Use </share:1354514123479711745> when you're done to get added to the discussion thread!"
+            "Use </share:1354514123479711745> when you're done to get added to the discussion thread!",
           );
         }
       }
       break;
   }
 });
+
+client.on("messageReactionAdd", async (reaction, user) => {
+  // makes sure the message hasn't already been forwarded
+  let i = msgboard.findIndex((m) => m == reaction.message.id);
+  // if a message gets 3 reactions and it's not a duplicate
+  if (
+    reaction.count > 2 &&
+    i == -1
+  ) {
+    // this is so if the forwarded message gets reacted on it won't forward it
+    let forwardedMessage = await reaction.message.forward(ids.msgboardChannel);
+    msgboard.push(reaction.message.id);
+    msgboard.push(forwardedMessage.id);
+    fileExport(msgboard, "msgboard.json");
+  }
+});
+
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
