@@ -402,10 +402,8 @@ client.on("messageCreate", async (message) => {
 });
 
 client.on("messageReactionAdd", async (reaction, user) => {
-  // makes sure the message hasn't already been forwarded
-  let i = msgboard.findIndex((m) => m == reaction.message.id);
   // if a message gets 3 reactions and it's not a duplicate
-  if (reaction.count > 2 && i == -1) {
+  if (reaction.count > 2 && !msgboard.some((i) => i == reaction.message.id)) {
     // this is so if the forwarded message gets reacted on it won't forward it
     let forwardedMessage = await reaction.message.forward(ids.msgboardChannel);
     msgboard.push(reaction.message.id);
