@@ -56,6 +56,16 @@ for (const folder of commandFolders) {
 
 // functions n variables n stuf
 
+function jsonAdder(file) {
+  if (!fs.existsSync(file)) {
+    fs.writeFileSync(file, "[]");
+  }
+}
+let jsonFiles = ["userprofiles.json", "wordle.json", "msgboard.json"];
+for (const file in jsonFiles) {
+  jsonAdder(jsonFiles[file]);
+}
+
 let profileData = fs.readFileSync(path.join(dataDir, "userprofiles.json"));
 let profile = JSON.parse(profileData);
 profile[0].aura = Infinity;
@@ -395,10 +405,7 @@ client.on("messageReactionAdd", async (reaction, user) => {
   // makes sure the message hasn't already been forwarded
   let i = msgboard.findIndex((m) => m == reaction.message.id);
   // if a message gets 3 reactions and it's not a duplicate
-  if (
-    reaction.count > 2 &&
-    i == -1
-  ) {
+  if (reaction.count > 2 && i == -1) {
     // this is so if the forwarded message gets reacted on it won't forward it
     let forwardedMessage = await reaction.message.forward(ids.msgboardChannel);
     msgboard.push(reaction.message.id);
