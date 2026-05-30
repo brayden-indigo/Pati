@@ -56,14 +56,26 @@ for (const folder of commandFolders) {
 
 // functions n variables n stuf
 
-let profileData = fs.readFileSync(path.join(dataDir, "userprofiles.json"));
-let profile = JSON.parse(profileData);
+// if a json file isn't added to the local environment, add it
+function jsonAdder(file) {
+  if (!fs.existsSync(file)) {
+    fs.writeFileSync(file, "[]");
+  }
+}
+
+let jsonFiles = ["userprofiles.json", "wordle.json", "msgboard.json"];
+
+for (const file in jsonFiles) {
+  jsonAdder(jsonFiles[file]);
+}
+
+// adds all the json data
+const getData = (file) => fs.readFileSync(path.join(dataDir, file));
+let profile = JSON.parse(getData("userprofiles.json"));
 profile[0].aura = Infinity;
 profile[1].aura = Infinity;
-let wordleData = fs.readFileSync(path.join(dataDir, "wordle.json"));
-let wordle = JSON.parse(wordleData);
-let msgboardData = fs.readFileSync(path.join(dataDir, "msgboard.json"));
-let msgboard = JSON.parse(msgboardData);
+let wordle = JSON.parse(getData("wordle.json"));
+let msgboard = JSON.parse(getData("msgboard.json"));
 
 // variable being the parsed json object and file being the target json file
 function fileExport(variable, file) {
@@ -392,13 +404,8 @@ client.on("messageCreate", async (message) => {
 });
 
 client.on("messageReactionAdd", async (reaction, user) => {
-  // makes sure the message hasn't already been forwarded
-  let i = msgboard.findIndex((m) => m == reaction.message.id);
   // if a message gets 3 reactions and it's not a duplicate
-  if (
-    reaction.count > 2 &&
-    i == -1
-  ) {
+  if (reaction.count > 2 && !msgboard.some((i) => i == reaction.message.id)) {
     // this is so if the forwarded message gets reacted on it won't forward it
     let forwardedMessage = await reaction.message.forward(ids.msgboardChannel);
     msgboard.push(reaction.message.id);
