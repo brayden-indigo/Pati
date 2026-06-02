@@ -56,11 +56,16 @@ for (const folder of commandFolders) {
 
 // functions n variables n stuf
 
-// if a json file isn't added to the local environment, add it
-function jsonAdder(file) {
-  if (!fs.existsSync(file)) {
-    fs.writeFileSync(file, "[]");
+function readJSON(file) {
+  const filePath = path.join(dataDir, file);
+
+  // if a json file isn't added to the local environment, add it
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, "[]");
   }
+
+  // read the JSON file and parse it
+  return JSON.parse(fs.readFileSync(filePath));
 }
 
 let jsonFiles = ["userprofiles.json", "wordle.json", "msgboard.json"];
@@ -70,12 +75,11 @@ for (const file in jsonFiles) {
 }
 
 // adds all the json data
-const getData = (file) => fs.readFileSync(path.join(dataDir, file));
-let profile = JSON.parse(getData("userprofiles.json"));
+let profile = readJSON("userprofiles.json");
 profile[0].aura = Infinity;
 profile[1].aura = Infinity;
-let wordle = JSON.parse(getData("wordle.json"));
-let msgboard = JSON.parse(getData("msgboard.json"));
+let wordle = readJSON("wordle.json");
+let msgboard = readJSON("msgboard.json");
 
 // variable being the parsed json object and file being the target json file
 function fileExport(variable, file) {
