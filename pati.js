@@ -68,12 +68,6 @@ function readJSON(file) {
   return JSON.parse(fs.readFileSync(filePath));
 }
 
-let jsonFiles = ["userprofiles.json", "wordle.json", "msgboard.json"];
-
-for (const file in jsonFiles) {
-  jsonAdder(jsonFiles[file]);
-}
-
 // adds all the json data
 let profile = readJSON("userprofiles.json");
 profile[0].aura = Infinity;
