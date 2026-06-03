@@ -164,8 +164,8 @@ function cooldownFalse(id) {
 }
 
 let ids = {
-    testServer: 946959817170378803,
-    mainServer: 1379699654836617260,
+    testServer: "946959817170378803",
+    mainServer: "1379699654836617260",
     wordle: "1211781489931452447",
     mainChat: "1379708536291983460",
     msgboardChannel: "1394867449618497577",
