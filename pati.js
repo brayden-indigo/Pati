@@ -1,6 +1,7 @@
 "use strict";
 const {
   Client,
+  Partials,
   GatewayIntentBits,
   Guild,
   ClientUser,
@@ -10,6 +11,7 @@ const {
   Events,
   MessageFlags,
   MessageReaction,
+  GuildMember,
 } = require("discord.js");
 require("dotenv").config();
 const fs = require("node:fs");
@@ -18,9 +20,11 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMembers,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMessageReactions,
   ],
+  partials: [Partials.GuildMember],
 });
 
 //MEOW: configurable data directory - defaults to working directory
@@ -409,6 +413,12 @@ client.on("messageReactionAdd", async (reaction, user) => {
     msgboard.push(reaction.message.id);
     msgboard.push(forwardedMessage.id);
     fileExport(msgboard, "msgboard.json");
+  }
+});
+
+client.on("guildMemberUpdate", async (oldMember, newMember) => {
+  if (newMember.roles.cache.some((role) => role.id === "1521998654913904801")) {
+    newMember.ban({ reason: "spam bot" });
   }
 });
 
